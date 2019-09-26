@@ -34,19 +34,20 @@ class TestCase:
 
     def run_test(self, exe_file):
         console = SafeConsole(exe_file, encoding='cp949')
-        for io, *content, is_inverse in self.test_content:
-            content = content[0]
+        for io, *content in self.test_content:
+            to_match = content[0]
+            is_inverse = content[-1]
             if io == "IN":
-                console.sendline(content)
+                console.sendline(to_match)
             elif io == "OUT":
-                if content == "TERMINATION":
+                if to_match == "TERMINATION":
                     if console.wait_timeout(2) not in [-1, 0, 1]:
                         console.kill('')
                         return False
                     continue
 
                 try:
-                    console.expect(content, timeout=2)
+                    console.expect(to_match, timeout=2)
                     if is_inverse:
                         console.kill('')
                         return False
@@ -56,11 +57,19 @@ class TestCase:
                         return False
                 except EOF:
                     result = console.before.replace('\r\n', ' ') + ' '
-                    if not findall(content, result):
-                        console.kill('')
-                        if not is_inverse:
+                    if type(to_match) == list:
+                        for to_match_element in to_match:
+                            if not findall(to_match_element, result):
+                                console.kill('')
+                                if not is_inverse:
+                                    console.kill('')
+                                    return False
+                    else:
+                        if not findall(to_match, result):
                             console.kill('')
-                            return False
+                            if not is_inverse:
+                                console.kill('')
+                                return False
             else:
                 raise Exception
         console.kill('')
