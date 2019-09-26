@@ -12,27 +12,34 @@ tests = [
     ]),
     TestCase("OUT OF RANGE 1", [
         ("IN", "0"),
-        ("OUT", ['-1', '0', '1', '2'], "NOT -1 or 0 or 1 or 2", True),
+        ("OUT", [TestCase.get_regex_contains(-1), TestCase.get_regex_contains(0),
+                 TestCase.get_regex_contains(1), TestCase.get_regex_contains(2)], "NOT -1 or 0 or 1 or 2", False),
         ("OUT", "TERMINATION", "(Some words and normal termination)"
-                               "(I can only detect exit code -1, 0, and 1, other exit codes is OK if its provided by you)")
+                               "(I can only detect exit code -1, 0, and 1, "
+                               "other exit codes are OK if it's provided by you)")
     ]),
     TestCase("OUT OF RANGE 2", [
         ("IN", "-10"),
-        ("OUT", ['-1', '0', '1', '2'], "NOT -1 or 0 or 1 or 2", True),
+        ("OUT", [TestCase.get_regex_contains(-1), TestCase.get_regex_contains(0),
+                 TestCase.get_regex_contains(1), TestCase.get_regex_contains(2)], "NOT -1 or 0 or 1 or 2", False),
         ("OUT", "TERMINATION", "(Some words and normal termination)"
-                               "(I can only detect exit code -1, 0, and 1, other exit codes is OK if its provided by you)")
+                               "(I can only detect exit code -1, 0, and 1, "
+                               "other exit codes are OK if it's provided by you)")
     ]),
     TestCase("OUT OF RANGE 3", [
         ("IN", "46"),
-        ("OUT", r"\b1836311903\b", "NOT 1836311903", True),
+        ("OUT", r"\b1836311903\b", "NOT 1836311903", False),
         ("OUT", "TERMINATION", "(Some words and normal termination)"
-                               "(I can only detect exit code -1, 0, and 1, other exit codes is OK if its provided by you)")
+                               "(I can only detect exit code -1, 0, and 1, "
+                               "other exit codes are OK if it's provided by you)")
     ]),
     TestCase("Invalid", [
         ("IN", "a"),
-        ("OUT", ['-1', '0', '1', '2'], "NOT -1 or 0 or 1 or 2", True),
+        ("OUT", [TestCase.get_regex_contains(-1), TestCase.get_regex_contains(0),
+                 TestCase.get_regex_contains(1), TestCase.get_regex_contains(2)], "NOT -1 or 0 or 1 or 2", False),
         ("OUT", "TERMINATION", "(Some words and normal termination)"
-                               "(I can only detect exit code -1, 0, and 1, other exit codes is OK if its provided by you)")
+                               "(I can only detect exit code -1, 0, and 1, "
+                               "other exit codes are OK if it's provided by you)")
     ])
 ]
 

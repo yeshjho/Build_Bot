@@ -36,7 +36,7 @@ class TestCase:
         console = SafeConsole(exe_file, encoding='cp949')
         for io, *content in self.test_content:
             to_match = content[0]
-            is_inverse = content[-1]
+            isnt_inverse = content[-1]
             if io == "IN":
                 console.sendline(to_match)
             elif io == "OUT":
@@ -48,11 +48,11 @@ class TestCase:
 
                 try:
                     console.expect(to_match, timeout=2)
-                    if is_inverse:
+                    if not isnt_inverse:
                         console.kill('')
                         return False
                 except TIMEOUT:
-                    if not is_inverse:
+                    if isnt_inverse:
                         console.kill('')
                         return False
                 except EOF:
@@ -61,13 +61,13 @@ class TestCase:
                         for to_match_element in to_match:
                             if not findall(to_match_element, result):
                                 console.kill('')
-                                if not is_inverse:
+                                if isnt_inverse:
                                     console.kill('')
                                     return False
                     else:
                         if not findall(to_match, result):
                             console.kill('')
-                            if not is_inverse:
+                            if isnt_inverse:
                                 console.kill('')
                                 return False
             else:

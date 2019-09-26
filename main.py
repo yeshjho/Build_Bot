@@ -16,13 +16,11 @@ TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
 CL_COMMAND = '"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2019/Visual Studio Tools/' \
              'Developer Command Prompt for VS 2019.lnk"'
 COOL_TIME_IN_MIN = 10
-VERSION = '1.0.1'
+VERSION = '1.1.0'
 
 sys.path.insert(0, './tests/')
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
-
-# TODO: 사용자용 명령어 (지원되는 과제 목록 확인 등)
 
 
 class SafeConsole(Console):
