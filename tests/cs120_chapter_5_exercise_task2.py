@@ -12,19 +12,27 @@ tests = [
     ]),
     TestCase("OUT OF RANGE 1", [
         ("IN", "0"),
-        ("OUT", "TERMINATION", "(Some words and normal termination)")
+        ("OUT", ['-1', '0', '1', '2'], "NOT -1 or 0 or 1 or 2", True),
+        ("OUT", "TERMINATION", "(Some words and normal termination)"
+                               "(I can only detect exit code -1, 0, and 1, other exit codes is OK if its provided by you)")
     ]),
     TestCase("OUT OF RANGE 2", [
         ("IN", "-10"),
-        ("OUT", "TERMINATION", "(Some words and normal termination)")
+        ("OUT", ['-1', '0', '1', '2'], "NOT -1 or 0 or 1 or 2", True),
+        ("OUT", "TERMINATION", "(Some words and normal termination)"
+                               "(I can only detect exit code -1, 0, and 1, other exit codes is OK if its provided by you)")
     ]),
     TestCase("OUT OF RANGE 3", [
         ("IN", "46"),
-        ("OUT", "1836311903", "NOT 1836311903", True)
+        ("OUT", r"\b1836311903\b", "NOT 1836311903", True),
+        ("OUT", "TERMINATION", "(Some words and normal termination)"
+                               "(I can only detect exit code -1, 0, and 1, other exit codes is OK if its provided by you)")
     ]),
     TestCase("Invalid", [
         ("IN", "a"),
-        ("OUT", "TERMINATION", "(Some words and normal termination)")
+        ("OUT", ['-1', '0', '1', '2'], "NOT -1 or 0 or 1 or 2", True),
+        ("OUT", "TERMINATION", "(Some words and normal termination)"
+                               "(I can only detect exit code -1, 0, and 1, other exit codes is OK if its provided by you)")
     ])
 ]
 

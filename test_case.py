@@ -40,23 +40,27 @@ class TestCase:
                 console.sendline(content)
             elif io == "OUT":
                 if content == "TERMINATION":
-                    if console.wait_timeout(2) in [-1, 0, 1]:
-                        return True
-                    console.kill('')
-                    return False
+                    if console.wait_timeout(2) not in [-1, 0, 1]:
+                        console.kill('')
+                        return False
+                    continue
 
                 try:
                     console.expect(content, timeout=2)
                     if is_inverse:
+                        console.kill('')
                         return False
                 except TIMEOUT:
-                    console.kill('')
-                    return True if is_inverse else False
+                    if not is_inverse:
+                        console.kill('')
+                        return False
                 except EOF:
                     result = console.before.replace('\r\n', ' ') + ' '
                     if not findall(content, result):
                         console.kill('')
-                        return True if is_inverse else False
+                        if not is_inverse:
+                            console.kill('')
+                            return False
             else:
                 raise Exception
         console.kill('')
