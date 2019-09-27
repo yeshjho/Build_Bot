@@ -16,7 +16,7 @@ TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
 CL_COMMAND = '"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2019/Visual Studio Tools/' \
              'Developer Command Prompt for VS 2019.lnk"'
 COOL_TIME_IN_MIN = 10
-VERSION = '1.1.0'
+VERSION = '1.2.0'
 
 sys.path.insert(0, './tests/')
 
@@ -88,6 +88,7 @@ class BuildBot(discord.Client):
     def __init__(self):
         super().__init__()
 
+        self.is_unittest = {}
         self.testing_user = {}
         self.test_result = {}
         self.last_compile_time = {}
@@ -111,10 +112,11 @@ class BuildBot(discord.Client):
             cpp_path = await self.save_file(msg, attachment)
             if cpp_path:
                 log("Saved a cpp file of", msg.author.name, "as", cpp_path.split('/')[-1])
-                exe_path = await self.compile_file(msg, cpp_path)
+                assignment = await self.query_assignment(msg, cpp_path)
+                exe_path = await self.compile_file(msg, cpp_path, assignment)
                 if exe_path:
                     log("Compiled a file of", msg.author.name, "as", exe_path.split('/')[-1])
-                    test_result = await self.test_file(msg, exe_path)
+                    test_result = await self.test_file(msg, exe_path, assignment)
                     if test_result:
                         log("Test Result of", msg.author.name, "on", test_result.assignment.__name__, ": ",
                             test_result.test_result, ',', test_result.error_result)
@@ -151,10 +153,34 @@ class BuildBot(discord.Client):
                                        str(delta.seconds % 60) + " seconds` for another attempt")
                 return False
         return True
+        
+    async def query_assignment(self, msg, cpp_path):
+        await msg.channel.send("What assignment is this for? Please enter a number")
+        assignments = [x.split('\\')[-1].split('.')[0] for x in glob("tests/*.py")]
+        await msg.channel.send('\n'.join([convert_number_to_emoji(x) + " " + y for x, y in enumerate(assignments)]))
 
-    async def compile_file(self, msg, cpp_path):
+        file_id = int(cpp_path.split('/')[-1].split('.')[0])
+        while True:
+            response = await self.wait_for("message", check=lambda m: m.author.id == self.testing_user[file_id])
+            response = response.content
+            if response.isdigit() and 0 <= int(response) <= len(assignments) - 1:
+                break
+            await msg.channel.send("Please try again")
+        assignment = assignments[int(response)]
+        
+        if assignment.__name__ in ['cs120_chapter_5_exercise_task1']:
+            self.is_unittest[file_id] = True
+            
+        return assignment
+
+    async def compile_file(self, msg, cpp_path, assignment):
         await msg.channel.send("Compiling...")
         self.last_compile_time[msg.author.id] = datetime.now()
+        
+        file_id = cpp_path.split('/')[-1].split('.')[0]
+        if self.is_unittest.get(file_id, False):
+            with Pool(len(assignment.tests)) as pool:
+                # call compile_file recursively?
 
         console = SafeConsole('cmd', encoding='cp949')
         console.sendline(CL_COMMAND)
@@ -182,21 +208,8 @@ class BuildBot(discord.Client):
         finally:
             console.kill('')
 
-    async def test_file(self, msg, exe_path):
-        await msg.channel.send("What assignment is this for? Please enter a number")
-        assignments = [x.split('\\')[-1].split('.')[0] for x in glob("tests/*.py")]
-        await msg.channel.send('\n'.join([convert_number_to_emoji(x) + " " + y for x, y in enumerate(assignments)]))
-
-        file_id = int(exe_path.split('/')[-1].split('.')[0])
-        while True:
-            response = await self.wait_for("message", check=lambda m: m.author.id == self.testing_user[file_id])
-            response = response.content
-            if response.isdigit() and 0 <= int(response) <= len(assignments) - 1:
-                break
-            await msg.channel.send("Please try again")
-
+    async def test_file(self, msg, exe_path, assignment):
         await msg.channel.send("Testing...")
-        assignment = import_module(assignments[int(response)])
         cpp_path = exe_path[:-4]
         with Pool(len(assignment.tests)) as pool:
             test_result = pool.starmap(run_test, zip(assignment.tests, [exe_path] * len(assignment.tests)))
@@ -216,13 +229,14 @@ class BuildBot(discord.Client):
         embed.add_field(name="Other Errors: " + str(error_count), value='\u200b')
         await msg.channel.send(embed=embed)
 
+        to_send = ""
         if pass_count:
-            await msg.channel.send("Type 'P' to examine what tests you've passed")
+            to_send += "Type 'P' to examine what tests you've passed\n"
         if fail_count:
-            await msg.channel.send("Type 'F' to examine what tests you've failed")
+            to_send += "Type 'F' to examine what tests you've failed\n"
         if error_count:
-            await msg.channel.send("Type 'E' to examine what errors you've got")
-        await msg.channel.send("Type 'A' to examine all")
+            to_send += "Type 'E' to examine what errors you've got\n"
+        await msg.channel.send(to_send + "Type 'A' to examine all")
 
         # remove(exe_path[:-4])
         remove(exe_path[:-4] + ".obj")
