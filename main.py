@@ -6,11 +6,12 @@ from glob import glob
 from importlib import import_module
 from multiprocessing import Pool
 from os import remove
-from os.path import dirname, abspath
+from os.path import dirname, abspath, isfile
 import sys
 from pexpect.popen_spawn import PopenSpawn as Console
 from pexpect import TIMEOUT
 from datetime import datetime, timedelta
+import re
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
 CL_COMMAND = '"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2019/Visual Studio Tools/' \
@@ -33,7 +34,7 @@ class SafeConsole(Console):
 
 class TestResult:
     def __init__(self, assignment, test_result, error_result):
-        self.assignment = import_module(assignment)
+        self.assignment = assignment
         self.test_result = test_result
         self.error_result = error_result
 
@@ -51,7 +52,7 @@ class TestResult:
             input_text = '```\n'
             output_text = '```\n'
             for io, *content in test_case.test_content:
-                if io == "IN":
+                if io == "IN" or io == "INSERT":
                     input_text += content[0] + '\n'
                 elif io == "OUT":
                     output_text += content[1] + '\n'
@@ -88,7 +89,7 @@ class BuildBot(discord.Client):
     def __init__(self):
         super().__init__()
 
-        self.is_unittest = {}
+        self.unittests = ['cs120_chapter_5_exercise_task1']
         self.testing_user = {}
         self.test_result = {}
         self.last_compile_time = {}
@@ -111,16 +112,26 @@ class BuildBot(discord.Client):
             attachment = msg.attachments[0]
             cpp_path = await self.save_file(msg, attachment)
             if cpp_path:
+                test_result = None
+
                 log("Saved a cpp file of", msg.author.name, "as", cpp_path.split('/')[-1])
-                assignment = await self.query_assignment(msg, cpp_path)
-                exe_path = await self.compile_file(msg, cpp_path, assignment)
-                if exe_path:
-                    log("Compiled a file of", msg.author.name, "as", exe_path.split('/')[-1])
-                    test_result = await self.test_file(msg, exe_path, assignment)
-                    if test_result:
-                        log("Test Result of", msg.author.name, "on", test_result.assignment.__name__, ": ",
-                            test_result.test_result, ',', test_result.error_result)
-                        self.test_result[msg.author.id] = test_result
+                is_unittest, assignment = await self.query_assignment(msg, cpp_path)
+                if is_unittest:
+                    exe_paths = await self.compile_files(msg, cpp_path, assignment)
+                    if exe_paths:
+                        log("Compiled files of", msg.author.name, "as", [path.split('/')[-1] for path in exe_paths])
+                        test_result = await self.test_file(msg, cpp_path, exe_paths, assignment)
+                else:
+                    exe_path = await self.compile_file(msg, cpp_path)
+                    if exe_path:
+                        log("Compiled a file of", msg.author.name, "as", exe_path.split('/')[-1])
+                        test_result = await self.test_file(msg, cpp_path,
+                                                           [exe_path] * len(assignment.tests), assignment)
+
+                if test_result:
+                    log("Test Result of", msg.author.name, "on", test_result.assignment.__name__, ": ",
+                        test_result.test_result, ',', test_result.error_result)
+                    self.test_result[msg.author.id] = test_result
 
         elif msg.author.id in self.test_result and len(msg.content) == 1 and msg.content.upper() in 'PFEA':
             for embed in self.test_result[msg.author.id].get_embeds(msg.content.upper()):
@@ -166,21 +177,16 @@ class BuildBot(discord.Client):
             if response.isdigit() and 0 <= int(response) <= len(assignments) - 1:
                 break
             await msg.channel.send("Please try again")
-        assignment = assignments[int(response)]
+        assignment = import_module(assignments[int(response)])
         
-        if assignment.__name__ in ['cs120_chapter_5_exercise_task1']:
-            self.is_unittest[file_id] = True
+        is_unittest = True if assignment.__name__ in self.unittests else False
             
-        return assignment
+        return is_unittest, assignment
 
-    async def compile_file(self, msg, cpp_path, assignment):
-        await msg.channel.send("Compiling...")
-        self.last_compile_time[msg.author.id] = datetime.now()
-        
-        file_id = cpp_path.split('/')[-1].split('.')[0]
-        if self.is_unittest.get(file_id, False):
-            with Pool(len(assignment.tests)) as pool:
-                # call compile_file recursively?
+    async def compile_file(self, msg, cpp_path, is_unittest=False):
+        if not is_unittest:
+            await msg.channel.send("Compiling...")
+            self.last_compile_time[msg.author.id] = datetime.now()
 
         console = SafeConsole('cmd', encoding='cp949')
         console.sendline(CL_COMMAND)
@@ -193,26 +199,61 @@ class BuildBot(discord.Client):
         try:
             expect_index = console.expect_exact(['error', 'out'])
             if expect_index:
-                await msg.channel.send("Compilation Succeeded")
+                if not is_unittest:
+                    await msg.channel.send("Compilation Succeeded")
+                console.kill('')
                 return exe_path
             else:
                 console.expect_exact('C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community>')
                 detail = console.before
-                remove(cpp_path)
-                await msg.channel.send(embed=Embed(title=":no_entry: Compilation Failed", color=0xff0000))
-                await msg.channel.send(detail[:2000])
+                # remove(cpp_path)
+                if not is_unittest:
+                    await msg.channel.send(embed=Embed(title=":no_entry: Compilation Failed", color=0xff0000))
+                    await msg.channel.send(detail[:2000])
+                console.kill('')
         except TIMEOUT:
-            remove(cpp_path)
-            await msg.channel.send(embed=Embed(title=":no_entry: Compilation Failed", color=0xff0000))
-            await msg.channel.send("Timed out")
-        finally:
+            # remove(cpp_path)
+            if not is_unittest:
+                await msg.channel.send(embed=Embed(title=":no_entry: Compilation Failed", color=0xff0000))
+                await msg.channel.send("Timed out")
             console.kill('')
 
-    async def test_file(self, msg, exe_path, assignment):
+    async def compile_files(self, msg, cpp_path, assignment):
+        await msg.channel.send("Compiling...")
+        self.last_compile_time[msg.author.id] = datetime.now()
+
+        with open(cpp_path, encoding='utf-8') as original_file:
+            original_code = original_file.read()
+
+        re.sub(r'/\*([\s\S]*?)\*/|//.*', '', original_code)
+
+        unittest_paths = []
+        index = 0
+        for test_case in assignment.tests:
+            index += 1
+            for io, *content in test_case.test_content:
+                if io == "INSERT":
+                    unittest_code = re.sub(r'int\s+main\s*\(.*\)\s*{', 'int main() {\n' + content[0] + "\nreturn 0;",
+                                           original_code)
+                    unittest_path = cpp_path[:-4] + "_unittest_" + str(index) + ".cpp"
+                    with open(unittest_path, "a+", encoding='utf-8') as unittest_file:
+                        unittest_file.write(unittest_code)
+                    unittest_paths.append(unittest_path)
+
+        length = len(assignment.tests)
+        with Pool(length) as pool:
+            exe_paths = pool.map(compile_file, unittest_paths)
+            if all(exe_paths):
+                await msg.channel.send("Compilation Succeeded")
+                return exe_paths
+            else:
+                await msg.channel.send(embed=Embed(title=":no_entry: Compilation Failed", color=0xff0000))
+
+    @staticmethod
+    async def test_file(msg, cpp_path, exe_paths, assignment):
         await msg.channel.send("Testing...")
-        cpp_path = exe_path[:-4]
         with Pool(len(assignment.tests)) as pool:
-            test_result = pool.starmap(run_test, zip(assignment.tests, [exe_path] * len(assignment.tests)))
+            test_result = pool.starmap(run_test, zip(assignment.tests, exe_paths))
         error_result = [test.run_test(cpp_path) for test in assignment.error_tests]
         await msg.channel.send("Test complete")
 
@@ -239,10 +280,12 @@ class BuildBot(discord.Client):
         await msg.channel.send(to_send + "Type 'A' to examine all")
 
         # remove(exe_path[:-4])
-        remove(exe_path[:-4] + ".obj")
+        for exe_path in exe_paths:
+            if isfile(exe_path[:-4] + ".obj"):
+                remove(exe_path[:-4] + ".obj")
         # remove(exe_path)
 
-        return TestResult(assignments[int(response)], test_result, error_result)
+        return TestResult(assignment, test_result, error_result)
 
     async def run_command(self, msg):
         commands = msg.content.split(' ')
@@ -255,6 +298,28 @@ class BuildBot(discord.Client):
                 self.last_compile_time[int(commands[1])] = datetime(2000, 1, 1)
         elif command == 'version':
             await msg.channel.send(VERSION)
+
+
+def compile_file(cpp_path):
+    console = SafeConsole('cmd', encoding='cp949')
+    console.sendline(CL_COMMAND)
+
+    obj_path = cpp_path + ".obj"
+    exe_path = cpp_path + ".exe"
+    console.sendline("cl /Fe" + exe_path + ' /Fo' + obj_path + " " + cpp_path +
+                     " /I" + TOP_FOLDER + "/external_libraries" + " /EHsc")
+
+    try:
+        expect_index = console.expect_exact(['error', 'out'])
+        console.kill('')
+        if expect_index:
+            return exe_path
+        else:
+            # remove(cpp_path)
+            pass
+    except TIMEOUT:
+        # remove(cpp_path)
+        console.kill('')
 
 
 def run_test(instance, file_path):

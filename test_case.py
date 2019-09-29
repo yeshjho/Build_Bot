@@ -45,6 +45,11 @@ class TestCase:
                         console.kill('')
                         return False
                     continue
+                elif to_match == "EXCEPTION":
+                    if console.wait_timeout(2) in [-1, 0, 1]:
+                        console.kill('')
+                        return False
+                    continue
 
                 try:
                     console.expect(to_match, timeout=2)
@@ -62,14 +67,15 @@ class TestCase:
                             if not findall(to_match_element, result):
                                 console.kill('')
                                 if isnt_inverse:
-                                    console.kill('')
                                     return False
                     else:
                         if not findall(to_match, result):
                             console.kill('')
                             if isnt_inverse:
-                                console.kill('')
                                 return False
+
+            elif io == "INSERT":
+                pass
             else:
                 raise Exception
         console.kill('')

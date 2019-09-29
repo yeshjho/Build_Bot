@@ -25,11 +25,19 @@ class ErrorTest:
         return to_return
 
     @staticmethod
-    def get_function_contains(content):
+    def get_function_contains(*content, should_contain=True):
         def to_return(cpp_file):
             with open(cpp_file, encoding='utf-8') as code_file:
                 codes = code_file.read()
 
-                return bool(findall(content, codes))
+                for comment in findall(r'/\*([\s\S]*?)\*/', codes) + findall(r'//.*', codes):
+                    codes.replace(comment, '')
+
+                does_contain = False
+                for to_match in content:
+                    if findall(to_match, codes):
+                        does_contain = True
+                        break
+                return does_contain if should_contain else not does_contain
 
         return to_return
