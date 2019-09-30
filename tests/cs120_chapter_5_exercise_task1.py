@@ -30,7 +30,7 @@ tests = [
     ]),
     TestCase("One Root - a=0, b≠0, c≠0", [
         ("INSERT", "SolveQuadEquation(0.0, 2.0, 1.0);"),
-        ("OUT", r"\broot : -0.5\b", "root : -0.5")
+        ("OUT", r"\b-0.5\b", "-0.5")
     ]),
     TestCase("One Root - a≠0, b=0, c=0", [
         ("INSERT", "SolveQuadEquation(5.0, 0.0, 0.0);"),
@@ -38,7 +38,7 @@ tests = [
     ]),
     TestCase("One Root - a=0, b≠0, c=0", [
         ("INSERT", "SolveQuadEquation(0.0, 5.0, 0.0);"),
-        ("OUT", r"\broot : (-)?0\b", "root : 0")
+        ("OUT", r"\b(-)?0\b", "0")
     ]),
     TestCase("No Root - a=0, b=0, c≠0", [
         ("INSERT", "SolveQuadEquation(0.0, 0.0, 5.0);"),

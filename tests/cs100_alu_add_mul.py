@@ -37,5 +37,5 @@ tests = [
 error_tests = [
     ErrorTest("Header Comment", "Your header comment is incorrect or missing", ErrorTest.check_header_comment('cs100')),
     ErrorTest("Usage of +, -, *", "Your code includes + or - or *",
-              ErrorTest.get_function_contains("+", "-", "*", should_contain=False))
+              ErrorTest.get_function_contains(r"\+", r"\-", r"\*", should_contain=False))
 ]
