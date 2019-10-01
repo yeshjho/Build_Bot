@@ -8,7 +8,7 @@ tests = [
     ]),
     TestCase("One Root - a≠0, b≠0, c≠0", [
         ("INSERT", "SolveQuadEquation(1.0, -2.0, 1.0);"),
-        ("OUT", r"1\b", "1")
+        ("OUT", TestCase.get_regex_contains("1"), "1")
     ]),
     TestCase("No Root - a≠0, b≠0, c≠0", [
         ("INSERT", "SolveQuadEquation(1.0, 1.0, 1.0);"),
@@ -30,15 +30,15 @@ tests = [
     ]),
     TestCase("One Root - a=0, b≠0, c≠0", [
         ("INSERT", "SolveQuadEquation(0.0, 2.0, 1.0);"),
-        ("OUT", r"\b-0.5\b", "-0.5")
+        ("OUT", TestCase.get_regex_contains("-0.5"), "-0.5")
     ]),
     TestCase("One Root - a≠0, b=0, c=0", [
         ("INSERT", "SolveQuadEquation(5.0, 0.0, 0.0);"),
-        ("OUT", r"\b(-)?0\b", "0")
+        ("OUT", TestCase.get_regex_contains(r"(-)?0"), "0")
     ]),
     TestCase("One Root - a=0, b≠0, c=0", [
         ("INSERT", "SolveQuadEquation(0.0, 5.0, 0.0);"),
-        ("OUT", r"\b(-)?0\b", "0")
+        ("OUT", TestCase.get_regex_contains(r"(-)?0"), "0")
     ]),
     TestCase("No Root - a=0, b=0, c≠0", [
         ("INSERT", "SolveQuadEquation(0.0, 0.0, 5.0);"),
