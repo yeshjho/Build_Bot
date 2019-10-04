@@ -31,8 +31,8 @@ class ErrorTest:
                 codes = code_file.read()
 
                 for comment in findall(r'/\*([\s\S]*?)\*/', codes) + findall(r'//.*', codes):
-                    codes.replace(comment, '')
-
+                    codes = codes.replace(comment, '')
+                
                 does_contain = False
                 for to_match in content:
                     if findall(to_match, codes):
