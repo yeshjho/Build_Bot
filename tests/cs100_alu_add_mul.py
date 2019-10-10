@@ -47,7 +47,7 @@ tests = [
 ]
 
 error_tests = [
-    ErrorTest("Header Comment", "Your header comment is incorrect or missing", ErrorTest.check_header_comment('Copyright (C)')),
+    ErrorTest("Header Comment", "Your header comment is incorrect or missing", ErrorTest.check_header_comment('copyright(c)')),
     ErrorTest("Usage of + or - or *", "Your code includes + or - or *",
               ErrorTest.get_function_contains(r"\+", should_contain=False))
 ]
