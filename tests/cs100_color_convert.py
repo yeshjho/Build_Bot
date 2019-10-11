@@ -24,12 +24,12 @@ tests = [
     ]),
     TestCase("Invalid Input - 24 Bits", [
         ("IN", "1"),
-        ("IN", "1FFFFFF"),
+        ("IN", "1000000"),
         ("OUT", "24 Bit Color is not valid", "24 Bit Color is not valid")
     ]),
     TestCase("Invalid Input - 16 Bits", [
         ("IN", "2"),
-        ("IN", "8FFF"),
+        ("IN", "8000"),
         ("OUT", "16 Bit Color is not valid", "16 Bit Color is not valid")
     ])
 ]
