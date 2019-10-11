@@ -5,12 +5,12 @@ tests = [
     TestCase("Valid Input - 24 to RGB", [
         ("IN", "1"),
         ("IN", "F58E22"),
-        ("OUT", "RGB = \(245, 142, 34\)", "RGB = (245, 142, 34)")
+        ("OUT", r"RGB = \(245, 142, 34\)", "RGB = (245, 142, 34)")
     ]),
     TestCase("Valid Input - GBA to RGB", [
         ("IN", "2"),
         ("IN", "78AF"),
-        ("OUT", "RGB = \(120, 40, 240\)", "RGB = (120, 40, 240)")
+        ("OUT", r"RGB = \(120, 40, 240\)", "RGB = (120, 40, 240)")
     ]),
     TestCase("Valid Input - RGB to GBA, Lossy", [
         ("IN", "3"),
