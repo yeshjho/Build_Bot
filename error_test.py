@@ -16,7 +16,7 @@ class ErrorTest:
             with open(cpp_file, encoding='utf-8') as code_file:
                 codes = code_file.read()
 
-                for comment in findall(r'/\*([\s\S]*?)\*/', codes) + findall(r'//.*', codes):
+                for comment in findall(r'/\*([\s\S]*?)\*/', codes) + findall(r'//.*\n', codes):
                     stripped = comment.replace('\n', '').replace('\t', '').replace(' ', '').lower()
                     if class_no in stripped:
                         return True
@@ -30,7 +30,7 @@ class ErrorTest:
             with open(cpp_file, encoding='utf-8') as code_file:
                 codes = code_file.read()
 
-                for comment in findall(r'/\*([\s\S]*?)\*/', codes) + findall(r'//.*', codes):
+                for comment in findall(r'/\*([\s\S]*?)\*/', codes) + findall(r'//.*\n', codes):
                     codes = codes.replace(comment, '')
                 
                 does_contain = False

@@ -217,6 +217,9 @@ class BuildBot(discord.Client):
                 await msg.channel.send(embed=Embed(title=":no_entry: Compilation Failed", color=0xff0000))
                 await msg.channel.send("Timed out")
             console.kill('')
+        
+        if isfile(cpp_path + ".obj"):
+            remove(cpp_path + ".obj")
 
     async def compile_files(self, msg, cpp_path, assignment):
         await msg.channel.send("Compiling...")
@@ -225,7 +228,7 @@ class BuildBot(discord.Client):
         with open(cpp_path, encoding='utf-8') as original_file:
             original_code = original_file.read()
 
-        re.sub(r'/\*([\s\S]*?)\*/|//.*', '', original_code)
+        re.sub(r'/\*([\s\S]*?)\*/|//.*\n', '', original_code)
 
         unittest_paths = []
         index = 0
@@ -245,6 +248,7 @@ class BuildBot(discord.Client):
             exe_paths = pool.map(compile_file, unittest_paths)
             if all(exe_paths):
                 await msg.channel.send("Compilation Succeeded")
+                
                 return exe_paths
             else:
                 await msg.channel.send(embed=Embed(title=":no_entry: Compilation Failed", color=0xff0000))
@@ -272,12 +276,12 @@ class BuildBot(discord.Client):
 
         to_send = ""
         if pass_count:
-            to_send += "Type 'P' to examine what tests you've passed\n"
+            to_send += "Type **`P`** to examine what tests you've passed\n"
         if fail_count:
-            to_send += "Type 'F' to examine what tests you've failed\n"
+            to_send += "Type **`F`** to examine what tests you've failed\n"
         if error_count:
-            to_send += "Type 'E' to examine what errors you've got\n"
-        await msg.channel.send(to_send + "Type 'A' to examine all")
+            to_send += "Type **`E`** to examine what errors you've got\n"
+        await msg.channel.send(to_send + "Type **`A`** to examine all")
 
         # remove(exe_path[:-4])
         for exe_path in exe_paths:
