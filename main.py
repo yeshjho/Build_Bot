@@ -17,7 +17,7 @@ TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
 CL_COMMAND = '"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2019/Visual Studio Tools/' \
              'Developer Command Prompt for VS 2019.lnk"'
 COOL_TIME_IN_MIN = 10
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 
 sys.path.insert(0, './tests/')
 
