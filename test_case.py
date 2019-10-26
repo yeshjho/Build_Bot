@@ -43,23 +43,23 @@ class TestCase:
                 if to_match == "TERMINATION":
                     if console.wait_timeout(2) not in [-1, 0, 1]:
                         console.kill('')
-                        return False
+                        return False, "(Didn't terminate successfully)"
                     continue
                 elif to_match == "EXCEPTION":
                     if console.wait_timeout(2) in [-1, 0, 1]:
                         console.kill('')
-                        return False
+                        return False, "(Didn't raise an exception)"
                     continue
 
                 try:
                     console.expect(to_match, timeout=2)
                     if not isnt_inverse:
                         console.kill('')
-                        return False
+                        return False, console.before + (console.after if type(console.after) == str else '')
                 except TIMEOUT:
                     if isnt_inverse:
                         console.kill('')
-                        return False
+                        return False, console.before + (console.after if type(console.after) == str else '')
                 except EOF:
                     result = console.before.replace('\r\n', ' ') + ' '
                     if type(to_match) == list:
@@ -67,19 +67,19 @@ class TestCase:
                             if not findall(to_match_element, result):
                                 console.kill('')
                                 if isnt_inverse:
-                                    return False
+                                    return False, console.before + (console.after if type(console.after) == str else '')
                     else:
                         if not findall(to_match, result):
                             console.kill('')
                             if isnt_inverse:
-                                return False
+                                return False, console.before + (console.after if type(console.after) == str else '')
 
             elif io == "INSERT":
                 pass
             else:
                 raise Exception
         console.kill('')
-        return True
+        return True, None
 
     @staticmethod
     def get_regex_contains(*args):

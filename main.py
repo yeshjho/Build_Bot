@@ -17,17 +17,19 @@ TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
 CL_COMMAND = '"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2019/Visual Studio Tools/' \
              'Developer Command Prompt for VS 2019.lnk"'
 COOL_TIME_IN_MIN = 10
-VERSION = '1.2.1'
+VERSION = '1.3.0'
 
-sys_path.insert(0, './tests/')
+IS_TESTING = True
+TESTER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
 
-# TODO: 실제 아웃풋 알려주기
-# TODO: 테스트 케이스 파일에 is_unittest 해놓고 그거로 유닛테스트인지 아닌지 체크
 # TODO: 텍스트들 다 분리하기
 # TODO: 블랙리스트
 # TODO: 테스트 케이스 목록 열람 명령어(열람하기 전에 직접 생각해 보는 게 좋다는 경고)
+
+
+sys_path.insert(0, './tests/')
 
 
 class SafeConsole(Console):
@@ -39,9 +41,10 @@ class SafeConsole(Console):
 
 
 class TestResult:
-    def __init__(self, assignment, test_result, error_result):
+    def __init__(self, assignment, test_result, actual_outputs, error_result):
         self.assignment = assignment
         self.test_result = test_result
+        self.actual_outputs = actual_outputs
         self.error_result = error_result
 
     def get_embeds(self, pfea):
@@ -66,6 +69,9 @@ class TestResult:
                     raise Exception
             embed.add_field(name="Input", value=input_text + '```', inline=False)
             embed.add_field(name="Expected Output", value=output_text + '```', inline=False)
+
+            if not has_passed:
+                embed.add_field(name="Actual Output", value='```' + self.actual_outputs[index] + '```', inline=False)
 
             if ('A' in pfea) or ('P' in pfea and has_passed) or ('F' in pfea and not has_passed):
                 embeds.append(embed)
@@ -109,6 +115,10 @@ class BuildBot(discord.Client):
             return
 
         if type(msg.channel) != DMChannel:
+            return
+
+        if IS_TESTING and msg.author.id != TESTER_ID:
+            await msg.channel.send("Sorry! Currently testing!")
             return
 
         if msg.attachments:
@@ -260,7 +270,9 @@ class BuildBot(discord.Client):
     async def test_file(msg, cpp_path, exe_paths, assignment):
         await msg.channel.send("Testing...")
         with Pool(len(assignment.tests)) as pool:
-            test_result = pool.starmap(run_test, zip(assignment.tests, exe_paths))
+            test_outcome = pool.starmap(run_test, zip(assignment.tests, exe_paths))
+        test_result = [outcome[0] for outcome in test_outcome]
+        actual_outputs = [outcome[1] for outcome in test_outcome]
         error_result = [test.run_test(cpp_path) for test in assignment.error_tests]
         await msg.channel.send("Test complete")
 
@@ -292,7 +304,7 @@ class BuildBot(discord.Client):
                 remove(exe_path[:-4] + ".obj")
         # remove(exe_path)
 
-        return TestResult(assignment, test_result, error_result)
+        return TestResult(assignment, test_result, actual_outputs, error_result)
 
     async def run_command(self, msg):
         commands = msg.content.split(' ')
