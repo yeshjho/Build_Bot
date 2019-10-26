@@ -7,7 +7,7 @@ from importlib import import_module
 from multiprocessing import Pool
 from os import remove
 from os.path import dirname, abspath, isfile
-import sys
+from sys import path as sys_path
 from pexpect.popen_spawn import PopenSpawn as Console
 from pexpect import TIMEOUT
 from datetime import datetime, timedelta
@@ -19,9 +19,15 @@ CL_COMMAND = '"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studi
 COOL_TIME_IN_MIN = 10
 VERSION = '1.2.1'
 
-sys.path.insert(0, './tests/')
+sys_path.insert(0, './tests/')
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
+
+# TODO: 실제 아웃풋 알려주기
+# TODO: 테스트 케이스 파일에 is_unittest 해놓고 그거로 유닛테스트인지 아닌지 체크
+# TODO: 텍스트들 다 분리하기
+# TODO: 블랙리스트
+# TODO: 테스트 케이스 목록 열람 명령어(열람하기 전에 직접 생각해 보는 게 좋다는 경고)
 
 
 class SafeConsole(Console):
@@ -115,8 +121,8 @@ class BuildBot(discord.Client):
                 test_result = None
 
                 log("Saved a cpp file of", msg.author.name, "as", cpp_path.split('/')[-1])
-                is_unittest, assignment = await self.query_assignment(msg, cpp_path)
-                if is_unittest:
+                assignment = await self.query_assignment(msg, cpp_path)
+                if assignment.is_unittest:
                     exe_paths = await self.compile_files(msg, cpp_path, assignment)
                     if exe_paths:
                         log("Compiled files of", msg.author.name, "as", [path.split('/')[-1] for path in exe_paths])
@@ -177,11 +183,8 @@ class BuildBot(discord.Client):
             if response.isdigit() and 0 <= int(response) <= len(assignments) - 1:
                 break
             await msg.channel.send("Please try again")
-        assignment = import_module(assignments[int(response)])
-        
-        is_unittest = True if assignment.__name__ in self.unittests else False
             
-        return is_unittest, assignment
+        return import_module(assignments[int(response)])
 
     async def compile_file(self, msg, cpp_path, is_unittest=False):
         if not is_unittest:

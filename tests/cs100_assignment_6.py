@@ -1,6 +1,8 @@
 from test_case import TestCase
 from error_test import ErrorTest
 
+is_unittest = False
+
 tests = [
     TestCase("(1)IsEven - Odd", [
         ("IN", "1"),
