@@ -31,6 +31,8 @@ class TEXT:
         ACTUAL_NO_EXCEPTION = "(Didn't raise an exception)"
 
     class SAVE:
+        BLOCKED = "Oops! You're on the blacklist!"
+
         SUPPORTED_FILE_EXTENSION = "Only cpp files are supported"
         RECEIVED = "File received"
 
@@ -61,5 +63,10 @@ class TEXT:
         TESTING = "Sorry! Currently Testing!"
 
     class COMMAND:
-        COOLTIME = "cooltime"
-        VERSION = "version"
+        COMMAND_COOLTIME = "cooltime"
+        COMMAND_VERSION = "version"
+        COMMAND_PERMISSION = "permission"
+
+        SUCCESS = "Successfully executed the command"
+        NO_PERMISSION = "You're not allowed to use this command!"
+        INVALID_ARGUMENT = "Arguments are invalid"

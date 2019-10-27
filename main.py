@@ -12,6 +12,7 @@ from pexpect.popen_spawn import PopenSpawn as Console
 from pexpect import TIMEOUT
 from datetime import datetime, timedelta
 import re
+import pickle
 from texts import TEXT
 
 VERSION = '1.3.1'
@@ -29,11 +30,10 @@ COMMAND_PREFIX = ">>>"
 COOL_TIME_IN_MIN = 10
 
 IS_TESTING = True
-TESTER_ID = 353886187879923712
+DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
 
-# TODO: 블랙리스트
 # TODO: 테스트 케이스 목록 열람 명령어(열람하기 전에 직접 생각해 보는 게 좋다는 경고)
 
 
@@ -108,6 +108,26 @@ class TestResult:
         return embeds
 
 
+class UserPermission:
+    DEFAULT_PERMISSION_LEVEL = 5
+    DEVELOPER_LEVEL = 10
+    BLACKLIST_LEVEL = 0
+
+    def __init__(self):
+        self.permissions = {
+            DEVELOPER_ID: self.DEVELOPER_LEVEL
+        }
+
+    def get_permission_level(self, user_id):
+        return self.permissions.get(user_id, self.DEFAULT_PERMISSION_LEVEL)
+
+    def set_permission_level(self, user_id, level):
+        self.permissions[user_id] = level
+
+        with open('permissions.pickle', 'wb') as permission_file:
+            pickle.dump(build_bot.user_permission, permission_file)
+
+
 class BuildBot(discord.Client):
     def __init__(self):
         super().__init__()
@@ -115,6 +135,12 @@ class BuildBot(discord.Client):
         self.testing_user = {}
         self.test_result = {}
         self.last_compile_time = {}
+
+        self.user_permission = UserPermission()
+
+        if isfile('permissions.pickle'):
+            with open('permissions.pickle', 'rb') as permission_file:
+                self.user_permission = pickle.load(permission_file)
 
     @staticmethod
     async def on_ready():
@@ -128,8 +154,12 @@ class BuildBot(discord.Client):
             return
 
         if msg.attachments:
-            if IS_TESTING and msg.author.id != TESTER_ID:
+            if IS_TESTING and msg.author.id != DEVELOPER_ID:
                 await msg.channel.send(TEXT.OTHER.TESTING)
+                return
+
+            if self.user_permission.get_permission_level(msg.author.id) <= UserPermission.BLACKLIST_LEVEL:
+                await msg.channel.send(TEXT.SAVE.BLOCKED)
                 return
 
             if not await self.passed_cool_time(msg):
@@ -327,14 +357,35 @@ class BuildBot(discord.Client):
     async def run_command(self, msg):
         commands = msg.content.split(' ')
         command = commands[0][3:]
+        arguments = commands[1:]
 
-        if command == TEXT.COMMAND.COOLTIME:
-            if len(commands) == 1:
+        if command == TEXT.COMMAND.COMMAND_COOLTIME:
+            if self.user_permission.get_permission_level(msg.author.id) < UserPermission.DEVELOPER_LEVEL:
+                await msg.channel.send(TEXT.COMMAND.NO_PERMISSION)
+                return
+
+            if len(arguments) == 0:
                 self.last_compile_time[msg.author.id] = datetime(2000, 1, 1)
+                await msg.channel.send(TEXT.COMMAND.SUCCESS)
+            elif len(arguments) == 1:
+                self.last_compile_time[int(arguments[0])] = datetime(2000, 1, 1)
+                await msg.channel.send(TEXT.COMMAND.SUCCESS)
             else:
-                self.last_compile_time[int(commands[1])] = datetime(2000, 1, 1)
-        elif command == TEXT.COMMAND.VERSION:
+                await msg.channel.send(TEXT.COMMAND.INVALID_ARGUMENT)
+
+        elif command == TEXT.COMMAND.COMMAND_VERSION:
             await msg.channel.send(VERSION)
+
+        elif command == TEXT.COMMAND.COMMAND_PERMISSION:
+            if self.user_permission.get_permission_level(msg.author.id) < UserPermission.DEVELOPER_LEVEL:
+                await msg.channel.send(TEXT.COMMAND.NO_PERMISSION)
+                return
+
+            if len(arguments) == 2:
+                await msg.channel.send(TEXT.COMMAND.SUCCESS)
+                self.user_permission.set_permission_level(int(arguments[0]), int(arguments[1]))
+            else:
+                await msg.channel.send(TEXT.COMMAND.INVALID_ARGUMENT)
 
 
 def compile_file(cpp_path):
