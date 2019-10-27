@@ -15,7 +15,7 @@ import re
 import pickle
 from texts import TEXT
 
-VERSION = '1.3.1'
+VERSION = '1.4.0'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
@@ -29,7 +29,7 @@ SUPPORTED_EXTENSION = "cpp"
 COMMAND_PREFIX = ">>>"
 COOL_TIME_IN_MIN = 10
 
-IS_TESTING = True
+IS_TESTING = False
 DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
