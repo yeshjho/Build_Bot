@@ -29,7 +29,7 @@ SUPPORTED_EXTENSION = "cpp"
 COMMAND_PREFIX = ">>>"
 COOL_TIME_IN_MIN = 10
 
-IS_TESTING = False
+IS_TESTING = True
 DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot

@@ -57,7 +57,8 @@ tests = [
         ("IN", "5"),
         ("IN", "12345678"),
         ("IN", "0"),
-        ("OUT", "If you set bit 0 of 0x12345678 it becomes 0x12345679", "If you set bit 0 of 0x12345678 it becomes 0x12345679")
+        ("OUT", "If you set bit 0 of 0x12345678 it becomes 0x12345679",
+         "If you set bit 0 of 0x12345678 it becomes 0x12345679")
     ]),
     TestCase("(6)ClearBit - Normal", [
         ("IN", "6"),
@@ -101,12 +102,14 @@ tests = [
     TestCase("(8)EvenOddBitSwap - 1", [
         ("IN", "8"),
         ("IN", "AAAAAAAA"),
-        ("OUT", "0xaaaaaaaa when swapped even/odd bits becomes 0x55555555", "0xaaaaaaaa when swapped even/odd bits becomes 0x55555555")
+        ("OUT", "0xaaaaaaaa when swapped even/odd bits becomes 0x55555555",
+         "0xaaaaaaaa when swapped even/odd bits becomes 0x55555555")
     ]),
     TestCase("(8)EvenOddBitSwap - 2", [
         ("IN", "8"),
         ("IN", "12345678"),
-        ("OUT", "0x12345678 when swapped even/odd bits becomes 0x2138a9b4", "0x12345678 when swapped even/odd bits becomes 0x2138a9b4")
+        ("OUT", "0x12345678 when swapped even/odd bits becomes 0x2138a9b4",
+         "0x12345678 when swapped even/odd bits becomes 0x2138a9b4")
     ]),
     TestCase("(9)BitSwap - 0 and 0", [
         ("IN", "9"),
@@ -147,7 +150,8 @@ tests = [
         ("IN", "10"),
         ("IN", "87DF2A3"),
         ("IN", "109C3EE"),
-        ("OUT", "Swap 0x87df2a3 and 0x109c3ee becomes 0x109c3ee and 0x87df2a3", "Swap 0x87df2a3 and 0x109c3ee becomes 0x109c3ee and 0x87df2a3")
+        ("OUT", "Swap 0x87df2a3 and 0x109c3ee becomes 0x109c3ee and 0x87df2a3",
+         "Swap 0x87df2a3 and 0x109c3ee becomes 0x109c3ee and 0x87df2a3")
     ]),
     TestCase("(11)BitCount_Fast", [
         ("IN", "11"),
@@ -157,7 +161,9 @@ tests = [
 ]
 
 error_tests = [
-    ErrorTest("Header Comment", "Your header comment is incorrect or missing", ErrorTest.check_header_comment('copyright(c)')),
-    ErrorTest("Usage of + or - or * or /", "Your code includes + or - or * or /. It might be okay, just telling you it exists",
+    ErrorTest("Header Comment", "Your header comment is incorrect or missing",
+              ErrorTest.check_header_comment('copyright(c)')),
+    ErrorTest("Usage of + or - or * or /",
+              "Your code includes + or - or * or /. It might be okay, just telling you it exists",
               ErrorTest.get_function_contains(r"[^\+]\+[^\+]", should_contain=False))
 ]
