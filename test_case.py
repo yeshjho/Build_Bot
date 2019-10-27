@@ -2,6 +2,7 @@ from pexpect.popen_spawn import PopenSpawn as Console
 from pexpect import TIMEOUT, EOF
 from subprocess import TimeoutExpired
 from re import findall
+from texts import TEXT
 
 
 class SafeConsole(Console):
@@ -37,18 +38,19 @@ class TestCase:
         for io, *content in self.test_content:
             to_match = content[0]
             isnt_inverse = content[-1]
-            if io == "IN":
+            if io == TEXT.TESTCASE.INPUT:
                 console.sendline(to_match)
-            elif io == "OUT":
-                if to_match == "TERMINATION":
+
+            elif io == TEXT.TESTCASE.OUTPUT:
+                if to_match == TEXT.TESTCASE.TERMINATION:
                     if console.wait_timeout(2) not in [-1, 0, 1]:
                         console.kill('')
-                        return False, "(Didn't terminate successfully)"
+                        return False, TEXT.EMBED.ACTUAL_NO_TERMINATION
                     continue
-                elif to_match == "EXCEPTION":
+                elif to_match == TEXT.TESTCASE.EXCEPTION:
                     if console.wait_timeout(2) in [-1, 0, 1]:
                         console.kill('')
-                        return False, "(Didn't raise an exception)"
+                        return False, TEXT.EMBED.ACTUAL_NO_EXCEPTION
                     continue
 
                 try:
@@ -74,7 +76,7 @@ class TestCase:
                             if isnt_inverse:
                                 return False, console.before + (console.after if type(console.after) == str else '')
 
-            elif io == "INSERT":
+            elif io == TEXT.TESTCASE.INSERT:
                 pass
             else:
                 raise Exception
