@@ -107,3 +107,12 @@
 [17:18:06]: Saved a cpp file of 잃어버린 학점을 찾습니다 as 638290377731735563.cpp
 [17:18:13]: Compiled a file of 잃어버린 학점을 찾습니다 as 638290377731735563.cpp.exe
 [17:18:18]: Test Result of 잃어버린 학점을 찾습니다 on cs120_chapter7_drill :  [False, False, True, False, False, False, False, False, False, False, False, False] , [False, False, False]
+[17:23:02]: Saved a cpp file of yeshjho as 638291614460280832.cpp
+[17:23:06]: Compiled a file of yeshjho as 638291614460280832.cpp.exe
+[17:23:10]: Test Result of yeshjho is 0%
+[17:23:35]: Saved a cpp file of HyeonSeo Yoon as 638291757322469377.cpp
+[17:23:41]: Compiled a file of HyeonSeo Yoon as 638291757322469377.cpp.exe
+[17:23:44]: Test Result of HyeonSeo Yoon is 0%
+[17:24:21]: Saved a cpp file of largna as 638291950314848256.cpp
+[17:24:28]: Compiled a file of largna as 638291950314848256.cpp.exe
+[17:24:32]: Test Result of largna is 0%

@@ -335,7 +335,11 @@ class BuildBot(discord.Client):
         percentage = round(pass_count / len(test_result) * 100)
 
         if (pass_count == 0):
-            await msg.channel.send(TEXT.TEST.ZERO_PERCENT)
+            embed = Embed()
+            embed.title = "0%"
+            embed.colour = RED
+            embed.add_field(name=TEXT.TEST.ZERO_PERCENT, value='\u200b')
+            await msg.channel.send(embed=embed)
             
             # remove(exe_path[:-4])
             for exe_path in exe_paths:
