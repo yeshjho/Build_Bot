@@ -1,0 +1,109 @@
+[15:23:29]: Saved a cpp file of 잼민이 as 638261531234009098.cpp
+[15:23:45]: Compiled a file of 잼민이 as 638261531234009098.cpp.exe
+[15:23:49]: Test Result of 잼민이 on cs120_chapter7_exercise :  [False, False, False, False] , [False]
+[15:25:35]: Saved a cpp file of 잃어버린 학점을 찾습니다 as 638262060475744257.cpp
+[15:25:43]: Compiled a file of 잃어버린 학점을 찾습니다 as 638262060475744257.cpp.exe
+[15:25:47]: Test Result of 잃어버린 학점을 찾습니다 on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, False, False, False, False] , [False, False, False]
+[15:25:56]: Saved a cpp file of yeshjho as 638262144756088852.cpp
+[15:26:03]: Compiled a file of yeshjho as 638262144756088852.cpp.exe
+[15:26:07]: Test Result of yeshjho on cs120_chapter7_exercise :  [True, True, True, True] , [True]
+[15:45:20]: Saved a cpp file of 잼민이 as 638267031778623508.cpp
+[15:45:28]: Compiled a file of 잼민이 as 638267031778623508.cpp.exe
+[15:45:32]: Test Result of 잼민이 on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, False, False, False, False] , [False, False, False]
+[15:46:06]: Saved a cpp file of 이상진 as 638267222049161235.cpp
+[15:51:32]: Saved a cpp file of suspcity as 638268590272806932.cpp
+[15:51:41]: Compiled a file of suspcity as 638268590272806932.cpp.exe
+[15:51:45]: Test Result of suspcity on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, False, False, False, False] , [False, False, False]
+[15:56:42]: Saved a cpp file of 싸늘하다...비숑이 날아와 꽂힌다 as 638269892830691348.cpp
+[15:56:55]: Compiled a file of 싸늘하다...비숑이 날아와 꽂힌다 as 638269892830691348.cpp.exe
+[15:57:00]: Test Result of 싸늘하다...비숑이 날아와 꽂힌다 on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, False, False, False, False] , [False, False, False]
+[15:58:06]: Saved a cpp file of 하얀바람 as 638270244829528065.cpp
+[16:01:42]: Saved a cpp file of 이상진 as 638271147108204555.cpp
+[16:01:49]: Compiled a file of 이상진 as 638271147108204555.cpp.exe
+[16:01:49]: Saved a cpp file of 잼민이 as 638271166225711105.cpp
+[16:01:54]: Test Result of 이상진 on cs120_chapter7_drill :  [False, False, False, True, True, False, False, False, False, False, False, False] , [False, False, False]
+[16:01:59]: Compiled a file of 잼민이 as 638271166225711105.cpp.exe
+[16:02:04]: Test Result of 잼민이 on cs120_chapter7_drill :  [True, False, False, False, False, False, False, False, False, False, False, False] , [False, False, False]
+[16:13:35]: Saved a cpp file of 하얀바람 as 638274138343211018.cpp
+[16:13:42]: Compiled a file of 하얀바람 as 638274138343211018.cpp.exe
+[16:13:47]: Test Result of 하얀바람 on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, False, False, False, False] , [True, False, False]
+[16:16:36]: Saved a cpp file of 이상진 as 638274899365986304.cpp
+[16:16:42]: Compiled a file of 이상진 as 638274899365986304.cpp.exe
+[16:16:46]: Test Result of 이상진 on cs120_chapter7_drill :  [False, False, True, True, True, False, False, False, False, False, False, False] , [False, False, False]
+[16:19:41]: Saved a cpp file of 잼민이 as 638275675467284491.cpp
+[16:19:49]: Compiled a file of 잼민이 as 638275675467284491.cpp.exe
+[16:19:53]: Test Result of 잼민이 on cs120_chapter7_drill :  [True, True, True, True, True, False, False, False, False, False, False, False] , [False, False, False]
+[16:23:46]: Saved a cpp file of 잃어버린 학점을 찾습니다 as 638276702153474069.cpp
+[16:28:09]: Saved a cpp file of yeshjho as 638277802583654452.cpp
+[16:28:21]: Saved a cpp file of 하얀바람 as 638277854601150474.cpp
+[16:28:27]: Compiled a file of 하얀바람 as 638277854601150474.cpp.exe
+[16:28:32]: Test Result of 하얀바람 on cs120_chapter7_drill :  [False, False, True, False, False, True, True, True, False, False, False, False] , [True, False, False]
+[16:30:56]: yeshjho Tried to use command >>>cooltime
+[16:31:04]: Saved a cpp file of yeshjho as 638278540076515328.cpp
+[16:31:10]: Compiled a file of yeshjho as 638278540076515328.cpp.exe
+[16:31:13]: Test Result of yeshjho on cs120_chapter7_exercise :  [True, True, True, True] , [True]
+[16:31:39]: Saved a cpp file of 차준혁 as 638278687913017374.cpp
+[16:31:47]: Compiled a file of 차준혁 as 638278687913017374.cpp.exe
+[16:31:53]: Test Result of 차준혁 on cs100_assignment_6 :  [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False] , [True, True]
+[16:32:43]: yeshjho Tried to use command >>>cooltime
+[16:32:48]: Saved a cpp file of yeshjho as 638278973972807680.cpp
+[16:32:53]: Compiled a file of yeshjho as 638278973972807680.cpp.exe
+[16:32:57]: Test Result of yeshjho on cs120_chapter7_exercise :  [True, True, True, True] , [True]
+[16:33:09]: yeshjho Tried to use command >>>cooltime
+[16:33:13]: Saved a cpp file of yeshjho as 638279082450223104.cpp
+[16:33:19]: Compiled a file of yeshjho as 638279082450223104.cpp.exe
+[16:33:22]: Test Result of yeshjho on cs120_chapter7_drill :  [True, True, True, True, True, True, True, True, True, True, True, True] , [True, True, True]
+[16:34:06]: Saved a cpp file of 이상진 as 638279299295870976.cpp
+[16:34:12]: Compiled a file of 이상진 as 638279299295870976.cpp.exe
+[16:34:16]: Test Result of 이상진 on cs120_chapter7_drill :  [False, False, True, True, True, True, True, True, False, False, True, False] , [False, False, False]
+[16:39:33]: yeshjho Tried to use command >>>permission 363929691675164676 0
+[16:40:42]: yeshjho Tried to use command >>>permission 363929691675164676 5
+[16:42:21]: Saved a cpp file of suspcity as 638281379104161812.cpp
+[16:42:28]: Compiled a file of suspcity as 638281379104161812.cpp.exe
+[16:42:33]: Test Result of suspcity on cs120_chapter7_drill :  [True, True, True, True, True, True, True, True, False, False, True, True] , [False, False, False]
+[16:42:40]: Saved a cpp file of Han as 638281459718684697.cpp
+[16:42:49]: Compiled a file of Han as 638281459718684697.cpp.exe
+[16:42:53]: Test Result of Han on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, False, False, False, False] , [False, False, False]
+[16:46:43]: Saved a cpp file of 잼민이 as 638282475747016704.cpp
+[16:46:49]: Compiled a file of 잼민이 as 638282475747016704.cpp.exe
+[16:46:52]: Test Result of 잼민이 on cs120_chapter7_drill :  [True, True, True, True, True, True, True, True, True, False, True, True] , [False, False, False]
+[16:51:00]: Saved a cpp file of 하얀바람 as 638283556103127041.cpp
+[16:51:10]: Compiled a file of 하얀바람 as 638283556103127041.cpp.exe
+[16:51:15]: Test Result of 하얀바람 on cs120_chapter7_drill :  [False, False, True, False, False, True, True, True, False, False, False, False] , [True, False, False]
+[16:52:45]: Saved a cpp file of HyeonSeo Yoon as 638283995272052736.cpp
+[16:52:53]: Compiled a file of HyeonSeo Yoon as 638283995272052736.cpp.exe
+[16:53:34]: Saved a cpp file of 이상진 as 638284201250258944.cpp
+[16:53:39]: Compiled a file of 이상진 as 638284201250258944.cpp.exe
+[16:53:44]: Test Result of 이상진 on cs120_chapter7_drill :  [True, True, True, True, True, True, True, True, False, False, True, True] , [False, False, False]
+[16:55:16]: Saved a cpp file of 시뇨느니 as 638284627160596480.cpp
+[16:55:29]: Compiled a file of 시뇨느니 as 638284627160596480.cpp.exe
+[16:55:34]: Test Result of 시뇨느니 on cs120_chapter7_drill :  [True, False, True, False, False, False, False, False, False, False, False, False] , [True, False, False]
+[16:55:34]: Saved a cpp file of 잃어버린 학점을 찾습니다 as 638284703396265984.cpp
+[16:55:40]: Compiled a file of 잃어버린 학점을 찾습니다 as 638284703396265984.cpp.exe
+[16:55:43]: Test Result of 잃어버린 학점을 찾습니다 on cs120_chapter7_exercise :  [False, False, False, False] , [False]
+[16:56:47]: Saved a cpp file of BlueJail96 as 638285009429594122.cpp
+[16:56:59]: Compiled a file of BlueJail96 as 638285009429594122.cpp.exe
+[16:57:04]: Test Result of BlueJail96 on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, False, False, False, False] , [False, False, False]
+[17:02:51]: Saved a cpp file of HyeonSeo Yoon as 638286538530226187.cpp
+[17:02:58]: Compiled a file of HyeonSeo Yoon as 638286538530226187.cpp.exe
+[17:03:03]: Test Result of HyeonSeo Yoon on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, False, False, False, False] , [True, False, False]
+[17:11:29]: Saved a cpp file of Sieunchoi as 638288709002854420.cpp
+[17:11:37]: Compiled a file of Sieunchoi as 638288709002854420.cpp.exe
+[17:11:41]: Test Result of Sieunchoi on cs120_chapter7_drill :  [False, False, False, False, False, False, False, False, True, False, False, False] , [False, False, False]
+[17:12:30]: Saved a cpp file of yeshjho as 638288964909793301.cpp
+[17:12:44]: Compiled a file of yeshjho as 638288964909793301.cpp.exe
+[17:12:47]: Test Result of yeshjho on cs120_chapter7_exercise :  [True, True, True, True] , [True]
+[17:13:11]: yeshjho Tried to use command >>>cooltime
+[17:13:16]: Saved a cpp file of yeshjho as 638289158603014144.cpp
+[17:13:21]: Compiled a file of yeshjho as 638289158603014144.cpp.exe
+[17:13:22]: Test Result of yeshjho is 0%
+[17:14:09]: Saved a cpp file of BlueJail96 as 638289381882331136.cpp
+[17:14:27]: Compiled a file of BlueJail96 as 638289381882331136.cpp.exe
+[17:14:31]: Test Result of BlueJail96 on cs120_chapter7_drill :  [False, True, True, False, False, False, False, False, False, False, False, False] , [True, False, False]
+[17:15:02]: BlueJail96 Tried to use command >>>cooltime
+[17:17:08]: Saved a cpp file of Han as 638290130515394560.cpp
+[17:17:15]: Compiled a file of Han as 638290130515394560.cpp.exe
+[17:17:20]: Test Result of Han on cs120_chapter7_drill :  [True, True, False, False, False, True, True, True, False, False, False, True] , [False, False, False]
+[17:18:06]: Saved a cpp file of 잃어버린 학점을 찾습니다 as 638290377731735563.cpp
+[17:18:13]: Compiled a file of 잃어버린 학점을 찾습니다 as 638290377731735563.cpp.exe
+[17:18:18]: Test Result of 잃어버린 학점을 찾습니다 on cs120_chapter7_drill :  [False, False, True, False, False, False, False, False, False, False, False, False] , [False, False, False]

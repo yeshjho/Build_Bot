@@ -15,7 +15,7 @@ import re
 import pickle
 from texts import TEXT
 
-VERSION = '1.4.0'
+VERSION = '1.4.1'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
@@ -29,7 +29,7 @@ SUPPORTED_EXTENSION = "cpp"
 COMMAND_PREFIX = ">>>"
 COOL_TIME_IN_MIN = 10
 
-IS_TESTING = True
+IS_TESTING = False
 DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
@@ -177,6 +177,8 @@ class BuildBot(discord.Client):
                     if exe_paths:
                         log("Compiled files of", msg.author.name, "as", [path.split('/')[-1] for path in exe_paths])
                         test_result = await self.test_file(msg, cpp_path, exe_paths, assignment)
+                    else:
+                        log("Compilation of", msg.author.name, "has failed")
                 else:
                     exe_path = await self.compile_file(msg, cpp_path)
                     if exe_path:
@@ -188,8 +190,10 @@ class BuildBot(discord.Client):
                     log("Test Result of", msg.author.name, "on", test_result.assignment.__name__, ": ",
                         test_result.test_result, ',', test_result.error_result)
                     self.test_result[msg.author.id] = test_result
+                else:
+                    log("Test Result of", msg.author.name, "is 0%")
 
-        elif msg.author.id in self.test_result and len(msg.content) == 1 and msg.content.upper() in 'PFEA':
+        elif self.test_result.get(msg.author.id, None) and len(msg.content) == 1 and msg.content.upper() in 'PFEA':
             for embed in self.test_result[msg.author.id].get_embeds(msg.content.upper()):
                 await msg.channel.send(embed=embed)
 
@@ -203,6 +207,8 @@ class BuildBot(discord.Client):
             return
 
         self.testing_user[attachment.id] = msg.author.id
+        self.test_result[msg.author.id] = None
+        
         cpp_path = TOP_FOLDER + 'received/' + str(attachment.id) + '.' + SUPPORTED_EXTENSION
         with open(cpp_path, 'wb') as file:
             await attachment.save(file, use_cached=False)
@@ -328,6 +334,17 @@ class BuildBot(discord.Client):
         error_count = error_result.count(False)
         percentage = round(pass_count / len(test_result) * 100)
 
+        if (pass_count == 0):
+            await msg.channel.send(TEXT.TEST.ZERO_PERCENT)
+            
+            # remove(exe_path[:-4])
+            for exe_path in exe_paths:
+                if isfile(exe_path[:-4] + ".obj"):
+                    remove(exe_path[:-4] + ".obj")
+            # remove(exe_path)
+            
+            return
+            
         embed = Embed()
         embed.title = TEXT.EMBED.TEST_RESULT + str(percentage) + "%" + \
                       (TEXT.EMBED.TEST_RESULT_WITH_ERROR if error_count else '')

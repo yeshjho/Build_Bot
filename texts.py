@@ -53,6 +53,8 @@ class TEXT:
         TESTING = "Testing..."
         COMPLETE = "Testing complete"
         FAIL = "Testing failed.\nIt might be my problem, please try again! Resetting your cooltime..."
+        
+        ZERO_PERCENT = "You've passed nothing! You may not examine any of the test cases...\nThink for yourself!"
 
         SEE_PASSED = "Type :regional_indicator_p: to examine what tests you've passed\n"
         SEE_FAILED = "Type :regional_indicator_f: to examine what tests you've failed\n"
