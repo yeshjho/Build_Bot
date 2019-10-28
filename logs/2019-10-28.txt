@@ -116,3 +116,22 @@
 [17:24:21]: Saved a cpp file of largna as 638291950314848256.cpp
 [17:24:28]: Compiled a file of largna as 638291950314848256.cpp.exe
 [17:24:32]: Test Result of largna is 0%
+[17:34:28]: Saved a cpp file of BlueJail96 as 638294493883531274.cpp
+[17:34:46]: Compiled a file of BlueJail96 as 638294493883531274.cpp.exe
+[17:34:52]: Test Result of BlueJail96 is 0%
+[17:36:57]: Saved a cpp file of yeshjho as 638295118977171458.cpp
+[17:37:03]: Compiled a file of yeshjho as 638295118977171458.cpp.exe
+[17:37:07]: Test Result of yeshjho on cs120_chapter7_exercise :  [True, True, True, True] , [True]
+[17:43:14]: Saved a cpp file of 잃어버린 학점을 찾습니다 as 638296700334899223.cpp
+[17:43:21]: Test Result of 잃어버린 학점을 찾습니다 is 0%
+[17:45:09]: Saved a cpp file of Sieunchoi as 638297182340120577.cpp
+[17:45:16]: Test Result of Sieunchoi is 0%
+[17:49:44]: Saved a cpp file of BlueJail96 as 638298333705666560.cpp
+[17:49:51]: Compiled a file of BlueJail96 as 638298333705666560.cpp.exe
+[17:49:55]: Test Result of BlueJail96 on cs120_chapter7_drill :  [False, False, True, False, False, False, False, False, False, False, False, False] , [True, False, False]
+[17:55:59]: Saved a cpp file of yeshjho as 638299910604849153.cpp
+[17:56:06]: Compiled a file of yeshjho as 638299910604849153.cpp.exe
+[17:56:11]: Test Result of yeshjho on cs120_chapter7_drill :  [True, True, True, True, True, True, True, True, True, True, False, True, True] , [True, True, True]
+[17:56:44]: Saved a cpp file of yeshjho as 638300099184951306.cpp
+[17:56:50]: Compiled a file of yeshjho as 638300099184951306.cpp.exe
+[17:56:53]: Test Result of yeshjho on cs120_chapter7_drill :  [True, True, True, True, True, True, True, True, True, True, True, True, True] , [True, True, True]

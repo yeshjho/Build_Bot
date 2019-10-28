@@ -46,6 +46,10 @@ tests = [
         ("IN", "q"),
         ("OUT", r"Please enter .+ to exit", "(keeping window open)")
     ]),
+    TestCase("Logic Error 11", [
+        ("IN", "4+2-5+8;"),
+        ("OUT", TestCase.get_regex_contains('= 9'), '= 9')
+    ]),
     TestCase("Check Working - Variables", [
         ("IN", "let a = 3;"),
         ("OUT", TestCase.get_regex_contains('= 3'), '= 3'),
@@ -57,8 +61,8 @@ tests = [
         ("OUT", TestCase.get_regex_contains('= 2'), '= 2')
     ]),
     TestCase("Check Working - Calculating", [
-        ("IN", "12*(3-1)%13*3+6/3/1*2;"),
-        ("OUT", TestCase.get_regex_contains('= 37'), '= 37')
+        ("IN", "12*(3-1)%13*3+-4+6/3/1*2;"),
+        ("OUT", TestCase.get_regex_contains('= 33'), '= 33')
     ])
 ]
 
