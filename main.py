@@ -5,8 +5,8 @@ import asyncio
 from glob import glob
 from importlib import import_module
 from multiprocessing import Pool
-from os import remove
-from os.path import dirname, abspath, isfile
+from os import remove, mkdir
+from os.path import dirname, abspath, isfile, isdir
 from sys import path as sys_path
 from pexpect.popen_spawn import PopenSpawn as Console
 from pexpect import TIMEOUT
@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 import re
 import pickle
 from texts import TEXT
+from user_permission import UserPermission, PERMISSIONS
 
 VERSION = '1.4.1'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
@@ -27,9 +28,9 @@ BLUE = 0x0000ff
 
 SUPPORTED_EXTENSION = "cpp"
 COMMAND_PREFIX = ">>>"
-COOL_TIME_IN_MIN = 10
+DEFAULT_COOLTIME_IN_MIN = 10
 
-IS_TESTING = False
+IS_TESTING = True
 DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
@@ -108,26 +109,6 @@ class TestResult:
         return embeds
 
 
-class UserPermission:
-    DEFAULT_PERMISSION_LEVEL = 5
-    DEVELOPER_LEVEL = 10
-    BLACKLIST_LEVEL = 0
-
-    def __init__(self):
-        self.permissions = {
-            DEVELOPER_ID: self.DEVELOPER_LEVEL
-        }
-
-    def get_permission_level(self, user_id):
-        return self.permissions.get(user_id, self.DEFAULT_PERMISSION_LEVEL)
-
-    def set_permission_level(self, user_id, level):
-        self.permissions[user_id] = level
-
-        with open('permissions.pickle', 'wb') as permission_file:
-            pickle.dump(build_bot.user_permission, permission_file)
-
-
 class BuildBot(discord.Client):
     def __init__(self):
         super().__init__()
@@ -136,11 +117,11 @@ class BuildBot(discord.Client):
         self.test_result = {}
         self.last_compile_time = {}
 
-        self.user_permission = UserPermission()
+        self.user_permission = UserPermission(self)
 
         if isfile('permissions.pickle'):
             with open('permissions.pickle', 'rb') as permission_file:
-                self.user_permission = pickle.load(permission_file)
+                self.user_permission.permissions = pickle.load(permission_file)
 
     @staticmethod
     async def on_ready():
@@ -162,7 +143,10 @@ class BuildBot(discord.Client):
                 await msg.channel.send(TEXT.SAVE.BLOCKED)
                 return
 
-            if not await self.passed_cool_time(msg):
+            has_passed_cooltime, delta = self.has_passed_cooltime(msg)
+            if not has_passed_cooltime:
+                await msg.channel.send(TEXT.SAVE.COOL_TIME_1 + str(delta.seconds // 60) + TEXT.SAVE.COOL_TIME_2 +
+                                       str(delta.seconds % 60) + TEXT.SAVE.COOL_TIME_3)
                 return
 
             attachment = msg.attachments[0]
@@ -208,22 +192,27 @@ class BuildBot(discord.Client):
 
         self.testing_user[attachment.id] = msg.author.id
         self.test_result[msg.author.id] = None
-        
-        cpp_path = TOP_FOLDER + 'received/' + str(attachment.id) + '.' + SUPPORTED_EXTENSION
+
+        folder_path = TOP_FOLDER + 'received/'
+        if not isdir(folder_path):
+            mkdir(folder_path)
+
+        cpp_path = folder_path + str(attachment.id) + '.' + SUPPORTED_EXTENSION
         with open(cpp_path, 'wb') as file:
             await attachment.save(file, use_cached=False)
         await msg.channel.send(TEXT.SAVE.RECEIVED)
 
         return cpp_path
 
-    async def passed_cool_time(self, msg):
+    def has_passed_cooltime(self, msg):
         if msg.author.id in self.last_compile_time:
+            permission_level = self.user_permission.get_permission_level(msg.author.id)
+            cooltime = PERMISSIONS.COOLTIME_IN_MIN.get(permission_level, DEFAULT_COOLTIME_IN_MIN)
+
             delta = datetime.now() - self.last_compile_time[msg.author.id]
-            if delta < timedelta(minutes=COOL_TIME_IN_MIN):
-                delta = timedelta(minutes=COOL_TIME_IN_MIN) - delta
-                await msg.channel.send(TEXT.SAVE.COOL_TIME_1 + str(delta.seconds // 60) + TEXT.SAVE.COOL_TIME_2 +
-                                       str(delta.seconds % 60) + TEXT.SAVE.COOL_TIME_3)
-                return False
+            if delta < timedelta(minutes=cooltime):
+                delta = timedelta(minutes=cooltime) - delta
+                return False, delta
         return True
 
     async def query_assignment(self, msg, cpp_path):
@@ -334,7 +323,7 @@ class BuildBot(discord.Client):
         error_count = error_result.count(False)
         percentage = round(pass_count / len(test_result) * 100)
 
-        if (pass_count == 0):
+        if pass_count == 0:
             embed = Embed()
             embed.title = "0%"
             embed.colour = RED
@@ -380,11 +369,11 @@ class BuildBot(discord.Client):
         command = commands[0][3:]
         arguments = commands[1:]
 
-        if command == TEXT.COMMAND.COMMAND_COOLTIME:
-            if self.user_permission.get_permission_level(msg.author.id) < UserPermission.DEVELOPER_LEVEL:
-                await msg.channel.send(TEXT.COMMAND.NO_PERMISSION)
-                return
+        if self.user_permission.get_permission_level(msg.author.id) < PERMISSIONS.COMMAND[command]:
+            await msg.channel.send(TEXT.COMMAND.NO_PERMISSION)
+            return
 
+        if command == TEXT.COMMAND.COMMAND_COOLTIME:
             if len(arguments) == 0:
                 self.last_compile_time[msg.author.id] = datetime(2000, 1, 1)
                 await msg.channel.send(TEXT.COMMAND.SUCCESS)
@@ -398,10 +387,6 @@ class BuildBot(discord.Client):
             await msg.channel.send(VERSION)
 
         elif command == TEXT.COMMAND.COMMAND_PERMISSION:
-            if self.user_permission.get_permission_level(msg.author.id) < UserPermission.DEVELOPER_LEVEL:
-                await msg.channel.send(TEXT.COMMAND.NO_PERMISSION)
-                return
-
             if len(arguments) == 2:
                 await msg.channel.send(TEXT.COMMAND.SUCCESS)
                 self.user_permission.set_permission_level(int(arguments[0]), int(arguments[1]))
@@ -452,8 +437,11 @@ def convert_number_to_emoji(num):
 
 
 def log(*texts):
-    path = TOP_FOLDER + '/logs/' + str(datetime.now().date()) + ".txt"
-    with open(path, 'a+', encoding='utf-8') as log_file:
+    folder_path = TOP_FOLDER + 'logs/'
+    if not isdir(folder_path):
+        mkdir(folder_path)
+    file_path = folder_path + str(datetime.now().date()) + ".txt"
+    with open(file_path, 'a+', encoding='utf-8') as log_file:
         log_file.write("[" + str(datetime.now().time())[:-7] + "]: " + " ".join(map(str, texts)) + "\n")
 
 
