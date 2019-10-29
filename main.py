@@ -16,7 +16,7 @@ import pickle
 from texts import TEXT
 from user_permission import UserPermission, PERMISSIONS
 
-VERSION = '1.4.1'
+VERSION = '1.4.2'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
@@ -169,6 +169,8 @@ class BuildBot(discord.Client):
                         log("Compiled a file of", msg.author.name, "as", exe_path.split('/')[-1])
                         test_result = await self.test_file(msg, cpp_path,
                                                            [exe_path] * len(assignment.tests), assignment)
+                    else:
+                        log("Compilation of", msg.author.name, "has failed")
 
                 if test_result:
                     log("Test Result of", msg.author.name, "on", test_result.assignment.__name__, ": ",
@@ -213,7 +215,7 @@ class BuildBot(discord.Client):
             if delta < timedelta(minutes=cooltime):
                 delta = timedelta(minutes=cooltime) - delta
                 return False, delta
-        return True
+        return True, None
 
     async def query_assignment(self, msg, cpp_path):
         await msg.channel.send(TEXT.SAVE.QUERY_ASSIGNMENT)
