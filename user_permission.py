@@ -35,5 +35,12 @@ class PERMISSIONS:
 
     COOLTIME_IN_MIN = {
         UserPermission.DEVELOPER_LEVEL: 0,
-        9: 0
+        9: 0,
+        8: 1,
+        7: 3,
+        6: 5,
+        4: 13,
+        3: 20,
+        2: 30,
+        1: 60
     }
