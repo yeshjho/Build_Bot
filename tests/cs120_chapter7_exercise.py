@@ -12,7 +12,9 @@ tests = [
         ("IN", "let a_b_c = 2;"),
         ("OUT", TestCase.get_regex_contains('= 2'), '= 2'),
         ("IN", "a_b_c = 5;"),
-        ("OUT", TestCase.get_regex_contains('= 5'), '= 5')
+        ("OUT", TestCase.get_regex_contains('= 5'), '= 5'),
+        ("IN", "a_b_c + 2;"),
+        ("OUT", TestCase.get_regex_contains('= 7'), '= 7')
     ]),
     TestCase("Constants", [
         ("IN", "const pi = 3.14;"),

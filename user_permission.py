@@ -1,4 +1,5 @@
 import pickle
+from sys import maxsize
 from texts import TEXT
 
 
@@ -7,8 +8,8 @@ DEVELOPER_ID = 353886187879923712
 
 class UserPermission:
     DEFAULT_PERMISSION_LEVEL = 5
-    DEVELOPER_LEVEL = 10
-    BLACKLIST_LEVEL = 0
+    DEVELOPER_LEVEL = maxsize
+    BLACKLIST_LEVEL = -maxsize - 1
 
     def __init__(self, bot):
         self.permissions = {
@@ -20,6 +21,11 @@ class UserPermission:
         return self.permissions.get(user_id, self.DEFAULT_PERMISSION_LEVEL)
 
     def set_permission_level(self, user_id, level):
+        if level == "blacklist":
+            level = UserPermission.BLACKLIST_LEVEL
+        elif level == "dev":
+            level = UserPermission.DEVELOPER_LEVEL
+
         self.permissions[user_id] = level
 
         with open('permissions.pickle', 'wb') as permission_file:
@@ -29,7 +35,7 @@ class UserPermission:
 class PERMISSIONS:
     COMMAND = {
         TEXT.COMMAND.COMMAND_COOLTIME: UserPermission.DEVELOPER_LEVEL,
-        TEXT.COMMAND.COMMAND_VERSION: 1,
+        TEXT.COMMAND.COMMAND_VERSION: UserPermission.BLACKLIST_LEVEL + 1,
         TEXT.COMMAND.COMMAND_PERMISSION: UserPermission.DEVELOPER_LEVEL
     }
 

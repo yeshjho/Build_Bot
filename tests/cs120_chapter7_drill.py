@@ -60,9 +60,19 @@ tests = [
         ("IN", "c%3;"),
         ("OUT", TestCase.get_regex_contains('= 2'), '= 2')
     ]),
+    TestCase("Check Not Working - Redeclaring a Variable", [
+        ("IN", "let b = 1;"),
+        ("OUT", TestCase.get_regex_contains('= 1'), '= 1'),
+        ("IN", "let b = 3;"),
+        ("OUT", TestCase.get_regex_contains('= 3'), "NOT = 3", False)
+    ]),
     TestCase("Check Working - Calculating", [
         ("IN", "12*(3-1)%13*3+-4+6/3/1*2;"),
         ("OUT", TestCase.get_regex_contains('= 33'), '= 33')
+    ]),
+    TestCase("Check Working - Quitting", [
+        ("IN", "quit"),
+        ("OUT", "TERMINATION", "Normal termination")
     ])
 ]
 

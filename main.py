@@ -35,7 +35,8 @@ DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
 
-# TODO: 테스트 케이스 목록 열람 명령어(열람하기 전에 직접 생각해 보는 게 좋다는 경고)
+# TODO: 권한별 속성 수정 명령어
+# TODO: 아이디 치면 권한 레벨 띄우기/해당 권한 레벨의 사용자 리스트 띄우기 명령어
 
 
 sys_path.insert(0, './tests/')
