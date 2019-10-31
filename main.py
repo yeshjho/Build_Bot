@@ -82,7 +82,7 @@ class TestResult:
             embed.add_field(name=TEXT.EMBED.EXPECTED_OUTPUT, value=output_text + '```', inline=False)
 
             if not has_passed:
-                embed.add_field(name=TEXT.EMBED.ACTUAL_OUTPUT, value='```' + self.actual_outputs[index] + '```',
+                embed.add_field(name=TEXT.EMBED.ACTUAL_OUTPUT, value='```' + self.actual_outputs[index][:1000] + '```',
                                 inline=False)
 
             if (TEXT.EMBED.SEE_ALL in pfea) or (TEXT.EMBED.SEE_PASSED in pfea and has_passed) or \
