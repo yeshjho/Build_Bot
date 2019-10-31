@@ -30,7 +30,7 @@ SUPPORTED_EXTENSION = "cpp"
 COMMAND_PREFIX = ">>>"
 DEFAULT_COOLTIME_IN_MIN = 10
 
-IS_TESTING = True
+IS_TESTING = False
 DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
@@ -108,7 +108,6 @@ class TestResult:
             index += 1
 
         return embeds
-
 
 class BuildBot(discord.Client):
     def __init__(self):
@@ -310,7 +309,7 @@ class BuildBot(discord.Client):
         try:
             with Pool(len(assignment.tests)) as pool:
                 test_outcome = pool.starmap(run_test, zip(assignment.tests, exe_paths))
-        except ...:
+        except PermissionError:
             self.last_compile_time[msg.author.id] = datetime(2000, 1, 1)
             await msg.channel.send(TEXT.TEST.FAIL)
             return
@@ -392,7 +391,7 @@ class BuildBot(discord.Client):
         elif command == TEXT.COMMAND.COMMAND_PERMISSION:
             if len(arguments) == 2:
                 await msg.channel.send(TEXT.COMMAND.SUCCESS)
-                self.user_permission.set_permission_level(int(arguments[0]), int(arguments[1]))
+                self.user_permission.set_permission_level(int(arguments[0]), arguments[1])
             else:
                 await msg.channel.send(TEXT.COMMAND.INVALID_ARGUMENT)
 

@@ -26,7 +26,7 @@ class UserPermission:
         elif level == "dev":
             level = UserPermission.DEVELOPER_LEVEL
 
-        self.permissions[user_id] = level
+        self.permissions[user_id] = int(level)
 
         with open('permissions.pickle', 'wb') as permission_file:
             pickle.dump(self.bot.user_permission.permissions, permission_file)
