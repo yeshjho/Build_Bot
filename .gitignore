@@ -3,3 +3,4 @@ __pycache__/
 logs/
 received/
 tests/__pycache__/
+permissions.pickle
