@@ -9,12 +9,12 @@ tests = [
         ("OUT", TestCase.get_regex_contains('= 2'), '= 2')
     ]),
     TestCase("Assigning to a Variable", [
-        ("IN", "let a_b_c = 2;"),
-        ("OUT", TestCase.get_regex_contains('= 2'), '= 2'),
-        ("IN", "a_b_c = 5;"),
-        ("OUT", TestCase.get_regex_contains('= 5'), '= 5'),
+        ("IN", "let a_b_c = 2 * 2;"),
+        ("OUT", TestCase.get_regex_contains('= 4'), '= 4'),
+        ("IN", "a_b_c = 5 + 1;"),
+        ("OUT", TestCase.get_regex_contains('= 6'), '= 6'),
         ("IN", "a_b_c + 2;"),
-        ("OUT", TestCase.get_regex_contains('= 7'), '= 7')
+        ("OUT", TestCase.get_regex_contains('= 8'), '= 8')
     ]),
     TestCase("Constants", [
         ("IN", "const pi = 3.14;"),

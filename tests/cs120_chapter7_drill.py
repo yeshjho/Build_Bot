@@ -53,12 +53,12 @@ tests = [
     TestCase("Check Working - Variables", [
         ("IN", "let a = 3;"),
         ("OUT", TestCase.get_regex_contains('= 3'), '= 3'),
-        ("IN", "let b = 2;"),
-        ("OUT", TestCase.get_regex_contains('= 2'), '= 2'),
+        ("IN", "let b = 2 + 5;"),
+        ("OUT", TestCase.get_regex_contains('= 7'), '= 7'),
         ("IN", "let c = a*2+b;"),
-        ("OUT", TestCase.get_regex_contains('= 8'), '= 8'),
+        ("OUT", TestCase.get_regex_contains('= 13'), '= 13'),
         ("IN", "c%3;"),
-        ("OUT", TestCase.get_regex_contains('= 2'), '= 2')
+        ("OUT", TestCase.get_regex_contains('= 1'), '= 1')
     ]),
     TestCase("Check Not Working - Redeclaring a Variable", [
         ("IN", "let b = 1;"),
