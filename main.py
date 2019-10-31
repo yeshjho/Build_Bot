@@ -30,7 +30,7 @@ SUPPORTED_EXTENSION = "cpp"
 COMMAND_PREFIX = ">>>"
 DEFAULT_COOLTIME_IN_MIN = 10
 
-IS_TESTING = False
+IS_TESTING = True
 DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
@@ -389,7 +389,9 @@ class BuildBot(discord.Client):
             await msg.channel.send(VERSION)
 
         elif command == TEXT.COMMAND.COMMAND_PERMISSION:
-            if len(arguments) == 2:
+            if len(arguments) == 1:
+                await msg.channel.send(self.user_permission.get_permission_level(int(arguments[0])))
+            elif len(arguments) == 2:
                 await msg.channel.send(TEXT.COMMAND.SUCCESS)
                 self.user_permission.set_permission_level(int(arguments[0]), arguments[1])
             else:
