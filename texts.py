@@ -54,6 +54,8 @@ class TEXT:
         COMPLETE = "Testing complete"
         FAIL = "Testing failed.\nIt might be my problem, please try again! Resetting your cooltime..."
         
+        UNICODE_ERROR = "Error testing failed. Your file must be encoded with UTF-8.\nSkipping error tests..."
+        
         ZERO_PERCENT = "You've passed nothing! You may not examine any of the test cases...\nThink for yourself!"
 
         SEE_PASSED = "Type :regional_indicator_p: to examine what tests you've passed\n"
@@ -65,10 +67,20 @@ class TEXT:
         TESTING = "Sorry! Currently Testing!"
 
     class COMMAND:
+        COMMAND_HELP = "help"
         COMMAND_COOLTIME = "cooltime"
         COMMAND_VERSION = "version"
         COMMAND_PERMISSION = "permission"
+        COMMAND_ATTRIBUTE = "attribute"
+        COMMAND_RELOAD = "reload"
+
+        PERMISSION_COMMAND_SEE_ALL = "ALL"
+        PERMISSION_OTHER = "OTHER"
 
         SUCCESS = "Successfully executed the command"
         NO_PERMISSION = "You're not allowed to use this command!"
         INVALID_ARGUMENT = "Arguments are invalid"
+        UNKNOWN_COMMAND = "Unknown command\nType `>>>help` to see all available commands"
+
+    class ATTRIBUTES:
+        COOLTIME = "COOLTIME"

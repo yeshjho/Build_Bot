@@ -5,9 +5,10 @@ import asyncio
 from glob import glob
 from importlib import import_module
 from multiprocessing import Pool
-from os import remove, mkdir
+from os import remove, mkdir, execv
 from os.path import dirname, abspath, isfile, isdir
 from sys import path as sys_path
+from sys import argv, executable
 from pexpect.popen_spawn import PopenSpawn as Console
 from pexpect import TIMEOUT
 from datetime import datetime, timedelta
@@ -16,7 +17,7 @@ import pickle
 from texts import TEXT
 from user_permission import UserPermission, PERMISSIONS
 
-VERSION = '1.4.2'
+VERSION = '1.5.0'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
@@ -35,8 +36,7 @@ DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
 
-# TODO: 권한별 속성 수정 명령어
-# TODO: 아이디 치면 권한 레벨 띄우기/해당 권한 레벨의 사용자 리스트 띄우기 명령어
+# TODO: more aesthetic. embed 에 이모티콘/사진 띄우기 등
 
 
 sys_path.insert(0, './tests/')
@@ -109,6 +109,7 @@ class TestResult:
 
         return embeds
 
+
 class BuildBot(discord.Client):
     def __init__(self):
         super().__init__()
@@ -152,10 +153,11 @@ class BuildBot(discord.Client):
             attachment = msg.attachments[0]
             cpp_path = await self.save_file(msg, attachment)
             if cpp_path:
-                test_result = None
-
                 log("Saved a cpp file of", msg.author.name, "as", cpp_path.split('/')[-1])
                 assignment = await self.query_assignment(msg, cpp_path)
+                if not assignment:
+                    return
+
                 if assignment.is_unittest:
                     exe_paths = await self.compile_files(msg, cpp_path, assignment)
                     if exe_paths:
@@ -163,6 +165,7 @@ class BuildBot(discord.Client):
                         test_result = await self.test_file(msg, cpp_path, exe_paths, assignment)
                     else:
                         log("Compilation of", msg.author.name, "has failed")
+                        return
                 else:
                     exe_path = await self.compile_file(msg, cpp_path)
                     if exe_path:
@@ -171,6 +174,7 @@ class BuildBot(discord.Client):
                                                            [exe_path] * len(assignment.tests), assignment)
                     else:
                         log("Compilation of", msg.author.name, "has failed")
+                        return
 
                 if test_result:
                     log("Test Result of", msg.author.name, "on", test_result.assignment.__name__, ": ",
@@ -209,7 +213,7 @@ class BuildBot(discord.Client):
     def has_passed_cooltime(self, msg):
         if msg.author.id in self.last_compile_time:
             permission_level = self.user_permission.get_permission_level(msg.author.id)
-            cooltime = PERMISSIONS.COOLTIME_IN_MIN.get(permission_level, DEFAULT_COOLTIME_IN_MIN)
+            cooltime = PERMISSIONS.ATTRIBUTES[TEXT.ATTRIBUTES.COOLTIME].get(permission_level, DEFAULT_COOLTIME_IN_MIN)
 
             delta = datetime.now() - self.last_compile_time[msg.author.id]
             if delta < timedelta(minutes=cooltime):
@@ -225,12 +229,14 @@ class BuildBot(discord.Client):
         file_id = int(cpp_path.split('/')[-1].split('.')[0])
         while True:
             response = await self.wait_for("message", check=lambda m: m.author.id == self.testing_user[file_id])
-            response = response.content
-            if response.isdigit() and 0 <= int(response) <= len(assignments) - 1:
+            content = response.content
+            if content.isdigit() and 0 <= int(content) <= len(assignments) - 1:
                 break
+            elif response.attachments:
+                return
             await msg.channel.send(TEXT.SAVE.TRY_AGAIN)
 
-        return import_module(assignments[int(response)])
+        return import_module(assignments[int(content)])
 
     async def compile_file(self, msg, cpp_path, is_unittest=False):
         if not is_unittest:
@@ -305,7 +311,6 @@ class BuildBot(discord.Client):
     async def test_file(self, msg, cpp_path, exe_paths, assignment):
         await msg.channel.send(TEXT.TEST.TESTING)
 
-        test_outcome = None
         try:
             with Pool(len(assignment.tests)) as pool:
                 test_outcome = pool.starmap(run_test, zip(assignment.tests, exe_paths))
@@ -316,7 +321,11 @@ class BuildBot(discord.Client):
 
         test_result = [outcome[0] for outcome in test_outcome]
         actual_outputs = [outcome[1] for outcome in test_outcome]
-        error_result = [test.run_test(cpp_path) for test in assignment.error_tests]
+        try:
+            error_result = [test.run_test(cpp_path) for test in assignment.error_tests]
+        except UnicodeDecodeError:
+            error_result = []
+            await msg.channel.send(TEXT.TEST.UNICODE_ERROR)
 
         await msg.channel.send(TEXT.TEST.COMPLETE)
 
@@ -331,15 +340,15 @@ class BuildBot(discord.Client):
             embed.colour = RED
             embed.add_field(name=TEXT.TEST.ZERO_PERCENT, value='\u200b')
             await msg.channel.send(embed=embed)
-            
+
             # remove(exe_path[:-4])
             for exe_path in exe_paths:
                 if isfile(exe_path[:-4] + ".obj"):
                     remove(exe_path[:-4] + ".obj")
             # remove(exe_path)
-            
+
             return
-            
+
         embed = Embed()
         embed.title = TEXT.EMBED.TEST_RESULT + str(percentage) + "%" + \
                       (TEXT.EMBED.TEST_RESULT_WITH_ERROR if error_count else '')
@@ -371,11 +380,19 @@ class BuildBot(discord.Client):
         command = commands[0][3:]
         arguments = commands[1:]
 
-        if self.user_permission.get_permission_level(msg.author.id) < PERMISSIONS.COMMAND[command]:
+        if self.user_permission.get_permission_level(msg.author.id) < \
+                PERMISSIONS.COMMAND.get(command, UserPermission.BLACKLIST_LEVEL - 1):
             await msg.channel.send(TEXT.COMMAND.NO_PERMISSION)
             return
 
-        if command == TEXT.COMMAND.COMMAND_COOLTIME:
+        if command == TEXT.COMMAND.COMMAND_HELP:
+            embed = Embed()
+            for command in dir(TEXT.COMMAND):
+                if command.startswith("COMMAND_"):
+                    embed.add_field(name='>>>' + getattr(TEXT.COMMAND, command), value='\u200b', inline=False)
+            await msg.channel.send(embed=embed)
+
+        elif command == TEXT.COMMAND.COMMAND_COOLTIME:
             if len(arguments) == 0:
                 self.last_compile_time[msg.author.id] = datetime(2000, 1, 1)
                 await msg.channel.send(TEXT.COMMAND.SUCCESS)
@@ -389,13 +406,42 @@ class BuildBot(discord.Client):
             await msg.channel.send(VERSION)
 
         elif command == TEXT.COMMAND.COMMAND_PERMISSION:
+            if len(arguments) == 0:
+                await msg.channel.send(self.user_permission.get_permission_level(msg.author.id))
+                return
+
+            if self.user_permission.get_permission_level(msg.author.id) < \
+                    PERMISSIONS.COMMAND[TEXT.COMMAND.PERMISSION_OTHER]:
+                await msg.channel.send(TEXT.COMMAND.NO_PERMISSION)
+                return
+
             if len(arguments) == 1:
-                await msg.channel.send(self.user_permission.get_permission_level(int(arguments[0])))
+                if arguments[0] == TEXT.COMMAND.PERMISSION_COMMAND_SEE_ALL:
+                    await msg.channel.send(self.user_permission.permissions)
+                else:
+                    await msg.channel.send(self.user_permission.get_permission_level(int(arguments[0])))
             elif len(arguments) == 2:
-                await msg.channel.send(TEXT.COMMAND.SUCCESS)
                 self.user_permission.set_permission_level(int(arguments[0]), arguments[1])
+                await msg.channel.send(TEXT.COMMAND.SUCCESS)
             else:
                 await msg.channel.send(TEXT.COMMAND.INVALID_ARGUMENT)
+
+        elif command == TEXT.COMMAND.COMMAND_ATTRIBUTE:
+            if len(arguments) == 3:
+                if not getattr(TEXT.ATTRIBUTES, arguments[0], None):
+                    await msg.channel.send(TEXT.COMMAND.INVALID_ARGUMENT)
+                    return
+
+                PERMISSIONS.set_attribute(arguments[0], int(arguments[1]), int(arguments[2]))
+                await msg.channel.send(TEXT.COMMAND.SUCCESS)
+            else:
+                await msg.channel.send(TEXT.COMMAND.INVALID_ARGUMENT)
+
+        elif command == TEXT.COMMAND.COMMAND_RELOAD:
+            execv(executable, ['python'] + argv)
+
+        else:
+            await msg.channel.send(TEXT.COMMAND.UNKNOWN_COMMAND)
 
 
 def compile_file(cpp_path):
