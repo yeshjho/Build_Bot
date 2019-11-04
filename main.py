@@ -16,8 +16,9 @@ import re
 import pickle
 from texts import TEXT
 from user_permission import UserPermission, PERMISSIONS
+from random import choice
 
-VERSION = '1.5.0'
+VERSION = '1.5.1'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
@@ -334,11 +335,11 @@ class BuildBot(discord.Client):
         error_count = error_result.count(False)
         percentage = round(pass_count / len(test_result) * 100)
 
-        if pass_count == 0:
+        if percentage == 0:
             embed = Embed()
-            embed.title = "0%"
+            embed.title = choice(TEXT.TEST.ZERO_PERCENT_1) + " " + str(percentage) + '%'
             embed.colour = RED
-            embed.add_field(name=TEXT.TEST.ZERO_PERCENT, value='\u200b')
+            embed.add_field(name=TEXT.TEST.ZERO_PERCENT_2, value='\u200b')
             await msg.channel.send(embed=embed)
 
             # remove(exe_path[:-4])
@@ -350,8 +351,9 @@ class BuildBot(discord.Client):
             return
 
         embed = Embed()
-        embed.title = TEXT.EMBED.TEST_RESULT + str(percentage) + "%" + \
-                      (TEXT.EMBED.TEST_RESULT_WITH_ERROR if error_count else '')
+        embed.title = choice(TEXT.TEST.HUNDRED) if percentage == 100 else choice(TEXT.TEST.MIDDLE)
+        embed.title += " " + TEXT.EMBED.TEST_RESULT + str(percentage) + "%" + \
+                       (TEXT.EMBED.TEST_RESULT_WITH_ERROR if error_count else '')
         embed.colour = round((100 - percentage) / 100 * 255) * 16 ** 4 + round(percentage / 100 * 255)
         embed.add_field(name=TEXT.EMBED.PASSED_COUNT + str(pass_count), value='\u200b')
         embed.add_field(name=TEXT.EMBED.FAILED_COUNT + str(fail_count), value='\u200b')
@@ -417,7 +419,11 @@ class BuildBot(discord.Client):
 
             if len(arguments) == 1:
                 if arguments[0] == TEXT.COMMAND.PERMISSION_COMMAND_SEE_ALL:
-                    await msg.channel.send(self.user_permission.permissions)
+                    to_send = "```\n"
+                    for key, value in self.user_permission.permissions.items:
+                        to_send += str(key) + " : " + str(value) + '\n'
+                    to_send += "```"
+                    await msg.channel.send(to_send)
                 else:
                     await msg.channel.send(self.user_permission.get_permission_level(int(arguments[0])))
             elif len(arguments) == 2:

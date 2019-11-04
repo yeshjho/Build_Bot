@@ -55,8 +55,17 @@ class TEXT:
         FAIL = "Testing failed.\nIt might be my problem, please try again! Resetting your cooltime..."
         
         UNICODE_ERROR = "Error testing failed. Your file must be encoded with UTF-8.\nSkipping error tests..."
-        
-        ZERO_PERCENT = "You've passed nothing! You may not examine any of the test cases...\nThink for yourself!"
+
+        ZERO_PERCENT_1 = [":expressionless:", ":unamused:", ":disappointed:", ":worried:", ":frowning2:",
+                          ":persevere:", ":confounded:", ":tired_face:", ":weary:", ":scream:", ":cold_sweat:",
+                          ":sob:", ":dizzy_face:", ":poop:", ":head_bandage:"]
+        ZERO_PERCENT_2 = "You've passed nothing! You may not examine any of the test cases...\nThink for yourself!"
+
+        MIDDLE = [":neutral_face:", ":rolling_eyes:", ":thinking:", ":confused:", ":slight_frown:",
+                  ":disappointed_relieved:", ":sweat:", ":fearful:", ":cry:", ":flushed:", ":pensive:"]
+
+        HUNDRED = [":grinning:", ":smiley:", ":wink:", ":blush:", ":sunglasses:", ":+1:", ":smirk:",
+                   ":yum:", ":slight_smile:", ":laughing:", ":innocent:", ":hugging:"]
 
         SEE_PASSED = "Type :regional_indicator_p: to examine what tests you've passed\n"
         SEE_FAILED = "Type :regional_indicator_f: to examine what tests you've failed\n"
