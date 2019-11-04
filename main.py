@@ -37,8 +37,6 @@ DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
 
-# TODO: more aesthetic. embed 에 이모티콘/사진 띄우기 등
-
 
 sys_path.insert(0, './tests/')
 
