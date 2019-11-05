@@ -79,8 +79,30 @@ class TEXT:
 
     class OTHER:
         TESTING = "Sorry! Currently Testing!"
+        
+        NULL = '\u200b'
+        
+    class RE:
+        COMMENT = r'/\*([\s\S]*?)\*/|//.*\n'
+        MAIN = r'int\s+main\s*\(.*\)\s*{'
+    
+    class CMD:
+        START_CL = '"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2019/Visual Studio Tools/' \
+                   'Developer Command Prompt for VS 2019.lnk"'
+        COMPILE = "cl /Fe{0} /Fo{1} {2} /I{3}external_libraries /EHsc"
+        CL_PROMPT = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community>'
+
+    class PATH:
+        SUPPORTED_EXTENSION = "cpp"
+        
+        TESTCASE_FOLDER = "./tests/"
+        RECEIVED_FOLDER = "{0}received/"
+        
+        PERMISSION_FILE = "permissions.pickle"
 
     class COMMAND:
+        PREFIX = ">>>"
+        
         COMMAND_HELP = "help"
         COMMAND_COOLTIME = "cooltime"
         COMMAND_VERSION = "version"

@@ -22,23 +22,20 @@ VERSION = '1.5.2'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
-CL_COMMAND = '"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Visual Studio 2019/Visual Studio Tools/' \
-             'Developer Command Prompt for VS 2019.lnk"'
+
 
 RED = 0xff0000
 BLUE = 0x0000ff
 
-SUPPORTED_EXTENSION = "cpp"
-COMMAND_PREFIX = ">>>"
 DEFAULT_COOLTIME_IN_MIN = 10
 
-IS_TESTING = True
+IS_TESTING = False
 DEVELOPER_ID = 353886187879923712
 
 # https://discordapp.com/api/oauth2/authorize?client_id=622425177103269899&permissions=8&scope=bot
 
 
-sys_path.insert(0, './tests/')
+sys_path.insert(0, TEXT.PATH.TESTCASE_FOLDER)
 
 
 class SafeConsole(Console):
@@ -119,8 +116,8 @@ class BuildBot(discord.Client):
 
         self.user_permission = UserPermission(self)
 
-        if isfile('permissions.pickle'):
-            with open('permissions.pickle', 'rb') as permission_file:
+        if isfile(TEXT.PATH.PERMISSION_FILE):
+            with open(TEXT.PATH.PERMISSION_FILE, 'rb') as permission_file:
                 self.user_permission.permissions = pickle.load(permission_file)
 
     @staticmethod
@@ -186,28 +183,9 @@ class BuildBot(discord.Client):
             for embed in self.test_result[msg.author.id].get_embeds(msg.content.upper()):
                 await msg.channel.send(embed=embed)
 
-        elif msg.content.startswith(COMMAND_PREFIX):
+        elif msg.content.startswith(TEXT.COMMAND.PREFIX):
             log(msg.author.name, "Tried to use command", msg.content)
             await self.run_command(msg)
-
-    async def save_file(self, msg, attachment):
-        if attachment.filename.split('.')[-1] != SUPPORTED_EXTENSION:
-            await msg.channel.send(TEXT.SAVE.SUPPORTED_FILE_EXTENSION)
-            return
-
-        self.testing_user[attachment.id] = msg.author.id
-        self.test_result[msg.author.id] = None
-
-        folder_path = TOP_FOLDER + 'received/'
-        if not isdir(folder_path):
-            mkdir(folder_path)
-
-        cpp_path = folder_path + str(attachment.id) + '.' + SUPPORTED_EXTENSION
-        with open(cpp_path, 'wb') as file:
-            await attachment.save(file, use_cached=False)
-        await msg.channel.send(TEXT.SAVE.RECEIVED)
-
-        return cpp_path
 
     def has_passed_cooltime(self, msg):
         if msg.author.id in self.last_compile_time:
@@ -220,9 +198,28 @@ class BuildBot(discord.Client):
                 return False, delta
         return True, None
 
+    async def save_file(self, msg, attachment):
+        if attachment.filename.split('.')[-1] != TEXT.PATH.SUPPORTED_EXTENSION:
+            await msg.channel.send(TEXT.SAVE.SUPPORTED_FILE_EXTENSION)
+            return
+
+        self.testing_user[attachment.id] = msg.author.id
+        self.test_result[msg.author.id] = None
+
+        folder_path = TEXT.PATH.RECEIVED_FOLDER.format(TOP_FOLDER)
+        if not isdir(folder_path):
+            mkdir(folder_path)
+
+        cpp_path = folder_path + str(attachment.id) + '.' + TEXT.PATH.SUPPORTED_EXTENSION
+        with open(cpp_path, 'wb') as file:
+            await attachment.save(file, use_cached=False)
+        await msg.channel.send(TEXT.SAVE.RECEIVED)
+
+        return cpp_path
+
     async def query_assignment(self, msg, cpp_path):
         await msg.channel.send(TEXT.SAVE.QUERY_ASSIGNMENT)
-        assignments = [x.split('\\')[-1].split('.')[0] for x in glob("tests/*.py")]
+        assignments = [x.split('\\')[-1].split('.')[0] for x in glob(TEXT.PATH.TESTCASE_FOLDER + "*.py")]
         await msg.channel.send('\n'.join([convert_number_to_emoji(x) + " " + y for x, y in enumerate(assignments)]))
 
         file_id = int(cpp_path.split('/')[-1].split('.')[0])
@@ -243,12 +240,11 @@ class BuildBot(discord.Client):
             self.last_compile_time[msg.author.id] = datetime.now()
 
         console = SafeConsole('cmd', encoding='cp949')
-        console.sendline(CL_COMMAND)
+        console.sendline(TEXT.CMD.START_CL)
 
         obj_path = cpp_path + ".obj"
         exe_path = cpp_path + ".exe"
-        console.sendline("cl /Fe" + exe_path + ' /Fo' + obj_path + " " + cpp_path +
-                         " /I" + TOP_FOLDER + "/external_libraries" + " /EHsc")
+        console.sendline(TEXT.CMD.COMPILE.format(exe_path, obj_path, cpp_path, TOP_FOLDER))
 
         try:
             expect_index = console.expect_exact(['error', 'out'])
@@ -258,7 +254,7 @@ class BuildBot(discord.Client):
                 console.kill('')
                 return exe_path
             else:
-                console.expect_exact('C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community>')
+                console.expect_exact(TEXT.CMD.CL_PROMPT)
                 detail = console.before
                 # remove(cpp_path)
                 if not is_unittest:
@@ -282,7 +278,7 @@ class BuildBot(discord.Client):
         with open(cpp_path, encoding='utf-8') as original_file:
             original_code = original_file.read()
 
-        re.sub(r'/\*([\s\S]*?)\*/|//.*\n', '', original_code)
+        re.sub(TEXT.RE.COMMENT, '', original_code)
 
         unittest_paths = []
         index = 0
@@ -290,9 +286,9 @@ class BuildBot(discord.Client):
             index += 1
             for io, *content in test_case.test_content:
                 if io == TEXT.TESTCASE.INSERT:
-                    unittest_code = re.sub(r'int\s+main\s*\(.*\)\s*{', 'int main() {\n' + content[0] + "\nreturn 0;",
+                    unittest_code = re.sub(TEXT.RE.MAIN, 'int main() {\n' + content[0] + "\nreturn 0;",
                                            original_code)
-                    unittest_path = cpp_path[:-4] + "_unittest_" + str(index) + '.' + SUPPORTED_EXTENSION
+                    unittest_path = cpp_path[:-4] + "_unittest_" + str(index) + '.' + TEXT.PATH.SUPPORTED_EXTENSION
                     with open(unittest_path, "a+", encoding='utf-8') as unittest_file:
                         unittest_file.write(unittest_code)
                     unittest_paths.append(unittest_path)
@@ -341,7 +337,7 @@ class BuildBot(discord.Client):
 
         if percentage == 0:
             embed.colour = RED
-            embed.add_field(name=TEXT.TEST.ZERO_WORDS, value='\u200b')
+            embed.add_field(name=TEXT.TEST.ZERO_WORDS, value=TEXT.OTHER.NULL)
             await msg.channel.send(embed=embed)
 
             # remove(exe_path[:-4])
@@ -354,9 +350,9 @@ class BuildBot(discord.Client):
 
         embed.title += TEXT.EMBED.TEST_RESULT_WITH_ERROR if error_count else ''
         embed.colour = round((100 - percentage) / 100 * 255) * 16 ** 4 + round(percentage / 100 * 255)
-        embed.add_field(name=TEXT.EMBED.PASSED_COUNT + str(pass_count), value='\u200b')
-        embed.add_field(name=TEXT.EMBED.FAILED_COUNT + str(fail_count), value='\u200b')
-        embed.add_field(name=TEXT.EMBED.ERROR_COUNT + str(error_count), value='\u200b')
+        embed.add_field(name=TEXT.EMBED.PASSED_COUNT + str(pass_count), value=TEXT.OTHER.NULL)
+        embed.add_field(name=TEXT.EMBED.FAILED_COUNT + str(fail_count), value=TEXT.OTHER.NULL)
+        embed.add_field(name=TEXT.EMBED.ERROR_COUNT + str(error_count), value=TEXT.OTHER.NULL)
         await msg.channel.send(embed=embed)
 
         to_send = ""
@@ -390,7 +386,7 @@ class BuildBot(discord.Client):
             embed = Embed()
             for command in dir(TEXT.COMMAND):
                 if command.startswith("COMMAND_"):
-                    embed.add_field(name='>>>' + getattr(TEXT.COMMAND, command), value='\u200b', inline=False)
+                    embed.add_field(name=TEXT.COMMAND.PREFIX + getattr(TEXT.COMMAND, command), value=TEXT.OTHER.NULL, inline=False)
             await msg.channel.send(embed=embed)
 
         elif command == TEXT.COMMAND.COMMAND_COOLTIME:
@@ -451,12 +447,11 @@ class BuildBot(discord.Client):
 
 def compile_file(cpp_path):
     console = SafeConsole('cmd', encoding='cp949')
-    console.sendline(CL_COMMAND)
+    console.sendline(TEXT.CMD.START_CL)
 
     obj_path = cpp_path + ".obj"
     exe_path = cpp_path + ".exe"
-    console.sendline("cl /Fe" + exe_path + ' /Fo' + obj_path + " " + cpp_path +
-                     " /I" + TOP_FOLDER + "/external_libraries" + " /EHsc")
+    console.sendline(TEXT.CMD.COMPILE.format(exe_path, obj_path, cpp_path, TOP_FOLDER))
 
     try:
         expect_index = console.expect_exact(['error', 'out'])
@@ -476,10 +471,10 @@ def run_test(instance, file_path):
 
 
 def convert_number_to_emoji(num):
-    if num == 10:
-        return ":keycap_ten:"
-    elif num == 0:
+    if num == 0:
         return ":zero:"
+    elif num == 10:
+        return ":keycap_ten:"
 
     numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
     to_return = ""
