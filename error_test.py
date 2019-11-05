@@ -1,4 +1,5 @@
 from re import findall
+from texts import TEXT
 
 
 class ErrorTest:
@@ -9,6 +10,10 @@ class ErrorTest:
 
     def run_test(self, cpp_file):
         return self.func(cpp_file)
+        
+    @staticmethod
+    def get_comments(code_text):
+        return findall(TEXT.RE.COMMENT, code_text)
 
     @staticmethod
     def check_header_comment(class_no):
@@ -16,7 +21,7 @@ class ErrorTest:
             with open(cpp_file, encoding='utf-8') as code_file:
                 codes = code_file.read()
 
-                for comment in findall(r'/\*([\s\S]*?)\*/', codes) + findall(r'//.*\n', codes):
+                for comment in ErrorTest.get_comments(codes):
                     stripped = comment.replace('\n', '').replace('\t', '').replace(' ', '').lower()
                     if class_no in stripped:
                         return True
@@ -30,7 +35,7 @@ class ErrorTest:
             with open(cpp_file, encoding='utf-8') as code_file:
                 codes = code_file.read()
 
-                for comment in findall(r'/\*([\s\S]*?)\*/', codes) + findall(r'//.*\n', codes):
+                for comment in ErrorTest.get_comments(codes):
                     codes = codes.replace(comment, '')
                 
                 does_contain = False

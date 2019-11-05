@@ -18,7 +18,7 @@ from texts import TEXT
 from user_permission import UserPermission, PERMISSIONS
 from random import choice
 
-VERSION = '1.5.2'
+VERSION = '1.5.3'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
