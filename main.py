@@ -97,7 +97,7 @@ class TestResult:
 
                 embed = Embed()
                 embed.title = TEXT.EMBED.ERROR_NUM + str(index).zfill(2)
-                embed.colour = 0xff0000
+                embed.colour = RED
 
                 embed.add_field(name=test_case.title, value=test_case.desc)
 
@@ -262,13 +262,13 @@ class BuildBot(discord.Client):
                 detail = console.before
                 # remove(cpp_path)
                 if not is_unittest:
-                    await msg.channel.send(embed=Embed(title=TEXT.COMPILE.FAIL, color=0xff0000))
+                    await msg.channel.send(embed=Embed(title=TEXT.COMPILE.FAIL, color=RED))
                     await msg.channel.send(detail[:2000])
                 console.kill('')
         except TIMEOUT:
             # remove(cpp_path)
             if not is_unittest:
-                await msg.channel.send(embed=Embed(title=TEXT.COMPILE.FAIL, color=0xff0000))
+                await msg.channel.send(embed=Embed(title=TEXT.COMPILE.FAIL, color=RED))
                 await msg.channel.send(TEXT.COMPILE.TIMEOUT)
             console.kill('')
 
@@ -305,7 +305,7 @@ class BuildBot(discord.Client):
 
                 return exe_paths
             else:
-                await msg.channel.send(embed=Embed(title=TEXT.COMPILE.FAIL, color=0xff0000))
+                await msg.channel.send(embed=Embed(title=TEXT.COMPILE.FAIL, color=RED))
 
     async def test_file(self, msg, cpp_path, exe_paths, assignment):
         await msg.channel.send(TEXT.TEST.TESTING)
