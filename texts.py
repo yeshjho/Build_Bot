@@ -36,9 +36,9 @@ class TEXT:
         SUPPORTED_FILE_EXTENSION = "Only cpp files are supported"
         RECEIVED = "File received"
 
-        COOL_TIME_1 = "Whoa, too fast!\nYou have to wait for `"
-        COOL_TIME_2 = " minutes and "
-        COOL_TIME_3 = " seconds` for another attempt"
+        COOLTIME_WORDS = "Whoa, too fast!\nYou have to wait for `"
+        COOLTIME_MINUTE = " minutes and "
+        COOLTIME_SECOND = " seconds` for another attempt"
 
         QUERY_ASSIGNMENT = "What assignment is this for? Please enter a number"
         TRY_AGAIN = "Please try again"
@@ -56,16 +56,21 @@ class TEXT:
         
         UNICODE_ERROR = "Error testing failed. Your file must be encoded with UTF-8.\nSkipping error tests..."
 
-        ZERO_PERCENT_1 = [":expressionless:", ":unamused:", ":disappointed:", ":worried:", ":frowning2:",
-                          ":persevere:", ":confounded:", ":tired_face:", ":weary:", ":scream:", ":cold_sweat:",
-                          ":sob:", ":dizzy_face:", ":poop:", ":head_bandage:"]
-        ZERO_PERCENT_2 = "You've passed nothing! You may not examine any of the test cases...\nThink for yourself!"
+        ZERO_WORDS = "You've passed nothing! You may not examine any of the test cases...\nThink for yourself!"
 
-        MIDDLE = [":neutral_face:", ":rolling_eyes:", ":thinking:", ":confused:", ":slight_frown:",
-                  ":disappointed_relieved:", ":sweat:", ":fearful:", ":cry:", ":flushed:", ":pensive:"]
-
-        HUNDRED = [":grinning:", ":smiley:", ":wink:", ":blush:", ":sunglasses:", ":+1:", ":smirk:",
-                   ":yum:", ":slight_smile:", ":laughing:", ":innocent:", ":hugging:"]
+        EMOJIS = {
+            0: [":poop:", ":facepalm:", ":shrug:", ":speak_no_evil:", ":weary:", ":scream:", ":sob:", ":dizzy_face:"],
+            1: [":tired_face:", ":fearful:", ":flushed:", ":head_bandage:", ":confounded:"],
+            2: [":unamused:", ":worried:", ":cry:", ":cold_sweat:", ":persevere:"],
+            3: [":disappointed:", ":frowning2:", ":sweat:"],
+            4: [":pensive:", ":confused:", ":slight_frown:", ":disappointed_relieved:"],
+            5: [":expressionless:", ":rolling_eyes:"],
+            6: [":neutral_face:", ":thinking:"],
+            7: [":slight_smile:", ":blush:", ":smirk:"],
+            8: [":smiley:", ":laughing:", ":wink:"],
+            9: [":grinning:", ":innocent:", ":hugging:"],
+            10: [":100:", ":yum:", ":sunglasses:", ":+1:"]
+        }
 
         SEE_PASSED = "Type :regional_indicator_p: to examine what tests you've passed\n"
         SEE_FAILED = "Type :regional_indicator_f: to examine what tests you've failed\n"

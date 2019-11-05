@@ -18,7 +18,7 @@ from texts import TEXT
 from user_permission import UserPermission, PERMISSIONS
 from random import choice
 
-VERSION = '1.5.1'
+VERSION = '1.5.2'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
@@ -145,8 +145,8 @@ class BuildBot(discord.Client):
 
             has_passed_cooltime, delta = self.has_passed_cooltime(msg)
             if not has_passed_cooltime:
-                await msg.channel.send(TEXT.SAVE.COOL_TIME_1 + str(delta.seconds // 60) + TEXT.SAVE.COOL_TIME_2 +
-                                       str(delta.seconds % 60) + TEXT.SAVE.COOL_TIME_3)
+                await msg.channel.send(TEXT.SAVE.COOLTIME_WORDS + str(delta.seconds // 60) + TEXT.SAVE.COOLTIME_MINUTE +
+                                       str(delta.seconds % 60) + TEXT.SAVE.COOLTIME_SECOND)
                 return
 
             attachment = msg.attachments[0]
@@ -331,13 +331,17 @@ class BuildBot(discord.Client):
         pass_count = test_result.count(True)
         fail_count = test_result.count(False)
         error_count = error_result.count(False)
-        percentage = round(pass_count / len(test_result) * 100)
+        try:
+            percentage = round(pass_count / len(test_result) * 100)
+        except ZeroDivisionError:
+            percentage = 100
+           
+        embed = Embed()
+        embed.title = choice(TEXT.TEST.EMOJIS[percentage // 10]) + ' ' + TEXT.EMBED.TEST_RESULT + str(percentage) + '%'
 
         if percentage == 0:
-            embed = Embed()
-            embed.title = choice(TEXT.TEST.ZERO_PERCENT_1) + " " + str(percentage) + '%'
             embed.colour = RED
-            embed.add_field(name=TEXT.TEST.ZERO_PERCENT_2, value='\u200b')
+            embed.add_field(name=TEXT.TEST.ZERO_WORDS, value='\u200b')
             await msg.channel.send(embed=embed)
 
             # remove(exe_path[:-4])
@@ -348,10 +352,7 @@ class BuildBot(discord.Client):
 
             return
 
-        embed = Embed()
-        embed.title = choice(TEXT.TEST.HUNDRED) if percentage == 100 else choice(TEXT.TEST.MIDDLE)
-        embed.title += " " + TEXT.EMBED.TEST_RESULT + str(percentage) + "%" + \
-                       (TEXT.EMBED.TEST_RESULT_WITH_ERROR if error_count else '')
+        embed.title += TEXT.EMBED.TEST_RESULT_WITH_ERROR if error_count else ''
         embed.colour = round((100 - percentage) / 100 * 255) * 16 ** 4 + round(percentage / 100 * 255)
         embed.add_field(name=TEXT.EMBED.PASSED_COUNT + str(pass_count), value='\u200b')
         embed.add_field(name=TEXT.EMBED.FAILED_COUNT + str(fail_count), value='\u200b')

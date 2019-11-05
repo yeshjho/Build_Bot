@@ -38,8 +38,12 @@ class TestCase:
         for io, *content in self.test_content:
             to_match = content[0]
             isnt_inverse = content[-1]
+            
             if io == TEXT.TESTCASE.INPUT:
-                console.sendline(to_match)
+                try:
+                    console.sendline(to_match)
+                except OSError:
+                    return False, None
 
             elif io == TEXT.TESTCASE.OUTPUT:
                 if to_match == TEXT.TESTCASE.TERMINATION:
