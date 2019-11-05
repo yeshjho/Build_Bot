@@ -92,12 +92,19 @@ tests = [
         ("IN", "5"),
         ("OUT", "Clear bits 5 to 5 from 0xabcdef is 0xabcdcf", "Clear bits 5 to 5 from 0xabcdef is 0xabcdcf")
     ]),
-    TestCase("(7)ClearBitRange - 0 to 0", [
+    TestCase("(7)ClearBitRange - 0th to 0th", [
         ("IN", "7"),
         ("IN", "ABCDEF"),
         ("IN", "0"),
         ("IN", "0"),
         ("OUT", "Clear bits 0 to 0 from 0xabcdef is 0xabcdee", "Clear bits 0 to 0 from 0xabcdef is 0xabcdee")
+    ]),
+    TestCase("(7)ClearBitRange - 0th to 31th", [
+        ("IN", "7"),
+        ("IN", "87654321"),
+        ("IN", "0"),
+        ("IN", "31"),
+        ("OUT", "Clear bits 0 to 31 from 0x87654321 is 0x0", "Clear bits 0 to 31 from 0x87654321 is 0x0")
     ]),
     TestCase("(8)EvenOddBitSwap - 1", [
         ("IN", "8"),
