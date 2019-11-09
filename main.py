@@ -14,15 +14,15 @@ from pexpect import TIMEOUT
 from datetime import datetime, timedelta
 import re
 import pickle
+from random import choice
 from texts import TEXT
 from user_permission import UserPermission, PERMISSIONS
-from random import choice
+
 
 VERSION = '1.5.3'
 BOT_KEY = "NjIyNDI1MTc3MTAzMjY5ODk5.XX8nNA.imnCrShejzI8m_oqwRA2w6QiCDw"
 
 TOP_FOLDER = dirname(abspath(__file__)).replace('\\', '/') + '/'
-
 
 RED = 0xff0000
 BLUE = 0x0000ff
@@ -422,7 +422,12 @@ class BuildBot(discord.Client):
                 else:
                     await msg.channel.send(self.user_permission.get_permission_level(int(arguments[0])))
             elif len(arguments) == 2:
-                self.user_permission.set_permission_level(int(arguments[0]), arguments[1])
+                dest_level = arguments[1]
+                if arguments[1].startswith('+'):
+                    dest_level = self.user_permission.get_permission_level(int(arguments[0])) + int(arguments[1][1:])
+                elif arguments[1].startswith('-'):
+                    dest_level = self.user_permission.get_permission_level(int(arguments[0])) - int(arguments[1][1:])
+                self.user_permission.set_permission_level(int(arguments[0]), dest_level)
                 await msg.channel.send(TEXT.COMMAND.SUCCESS)
             else:
                 await msg.channel.send(TEXT.COMMAND.INVALID_ARGUMENT)
