@@ -59,17 +59,17 @@ class TEXT:
         ZERO_WORDS = "You've passed nothing! You may not examine any of the test cases...\nThink for yourself!"
 
         EMOJIS = {
-            0: [":poop:", ":facepalm:", ":shrug:", ":speak_no_evil:", ":weary:", ":scream:", ":sob:", ":dizzy_face:"],
-            1: [":tired_face:", ":fearful:", ":flushed:", ":head_bandage:", ":confounded:"],
-            2: [":unamused:", ":worried:", ":cry:", ":cold_sweat:", ":persevere:"],
-            3: [":disappointed:", ":frowning2:", ":sweat:"],
+            0: [":poop:", ":facepalm:", ":shrug:", ":speak_no_evil:", ":weary:", ":scream:", ":sob:", ":dizzy_face:", ":exploding_head:"],
+            1: [":tired_face:", ":fearful:", ":flushed:", ":head_bandage:", ":confounded:", ":face_with_hand_over_mouth:"],
+            2: [":unamused:", ":worried:", ":cry:", ":cold_sweat:", ":persevere:", ":woozy_face:"],
+            3: [":disappointed:", ":frowning2:", ":sweat:", ":pleading_face:"],
             4: [":pensive:", ":confused:", ":slight_frown:", ":disappointed_relieved:"],
-            5: [":expressionless:", ":rolling_eyes:"],
-            6: [":neutral_face:", ":thinking:"],
-            7: [":slight_smile:", ":blush:", ":smirk:"],
-            8: [":smiley:", ":laughing:", ":wink:"],
+            5: [":expressionless:", ":rolling_eyes:", ":face_with_monocle:"],
+            6: [":neutral_face:", ":thinking:", ":face_with_raised_eyebrow:"],
+            7: [":slight_smile:", ":blush:", ":smirk:", ":cowboy:"],
+            8: [":smiley:", ":laughing:", ":wink:", ":relaxed:"],
             9: [":grinning:", ":innocent:", ":hugging:"],
-            10: [":100:", ":yum:", ":sunglasses:", ":+1:"]
+            10: [":yum:", ":sunglasses:", ":heart_eyes:", ":star_struck:", ":partying_face:"]
         }
 
         SEE_PASSED = "Type :regional_indicator_p: to examine what tests you've passed\n"
